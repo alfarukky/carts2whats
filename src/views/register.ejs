@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head", { title: "Register Admin" }) %>
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <section class="register-section">
+      <div class="container py-5">
+        <div class="row justify-content-center align-items-center">
+          <!-- Illustration -->
+          <div class="col-md-6 text-center mb-4" data-aos="fade-right">
+            <img
+              src="/images/admin.svg"
+              alt="Admin Panel Illustration"
+              class="img-fluid auth-width"
+            />
+          </div>
+
+          <!-- Signup Form -->
+          <div class="col-md-6" data-aos="fade-left">
+            <div class="p-5 bg-white rounded-4 shadow-sm">
+              <h2 class="fw-bold text-dark mb-2 text-heading">
+                Create Admin Account
+              </h2>
+              <p class="text-muted mb-4">
+                Register to access the MorishCart admin dashboard.
+              </p>
+
+              <form
+                id="adminRegisterForm"
+                action="/api/auth/register"
+                method="POST"
+              >
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <input
+                      name="firstName"
+                      id="firstName"
+                      type="text"
+                      class="form-control p-3"
+                      placeholder="First name"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-md-6">
+                    <input
+                      name="lastName"
+                      id="lastName"
+                      type="text"
+                      class="form-control p-3"
+                      placeholder="Last name"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-12">
+                    <input
+                      name="email"
+                      id="email"
+                      type="email"
+                      class="form-control p-3"
+                      placeholder="Email"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-12">
+                    <input
+                      name="adminCode"
+                      id="adminCode"
+                      type="text"
+                      class="form-control p-3"
+                      placeholder="Admin Access Code"
+                      required
+                    />
+                    <small class="text-muted"
+                      >* Provided by system supervisor</small
+                    >
+                  </div>
+
+                  <div class="col-12">
+                    <input
+                      name="password"
+                      id="password"
+                      type="password"
+                      class="form-control p-3"
+                      placeholder="Password"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-12">
+                    <input
+                      name="confirmPassword"
+                      id="confirmPassword"
+                      type="password"
+                      class="form-control p-3"
+                      placeholder="Confirm password"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-12">
+                    <button
+                      type="submit"
+                      class="btn btn-success w-100 py-3 fw-semibold btn-animate"
+                    >
+                      Register as Admin
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <p class="text-center mt-4 text-muted">
+                Already an admin?
+                <a href="/api/auth/login" class="text-success fw-semibold"
+                  >Sign in</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <%- include("partials/footer.ejs") %>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/aos.js"></script>
+    <script>
+      AOS.init({ duration: 900, easing: 'ease-out-cubic', once: true });
+    </script>
+  </body>
+</html>
