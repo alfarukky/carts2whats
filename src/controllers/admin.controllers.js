@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { connectDB } from '../config/db.js';
+import { pool } from '../config/db.js';
 
 // Show registration page
 export function showRegisterPage(req, res) {
@@ -9,8 +9,6 @@ export function showRegisterPage(req, res) {
 // Handle admin registration
 export async function registerAdmin(req, res) {
   try {
-    const connection = await connectDB();
-
     const { firstName, lastName, email, adminCode, password, confirmPassword } = req.body;
 
     // Validations
@@ -31,7 +29,7 @@ export async function registerAdmin(req, res) {
     }
 
     // Check if user exists
-    const [existing] = await connection.query(
+    const [existing] = await pool.query(
       'SELECT * FROM admin_users WHERE email = ?',
       [email]
     );
@@ -45,7 +43,7 @@ export async function registerAdmin(req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert into DB
-    await connection.query(
+    await pool.query(
       `INSERT INTO admin_users (first_name, last_name, email, password_hash)
        VALUES (?, ?, ?, ?)`,
       [firstName, lastName, email, hashedPassword]
@@ -70,8 +68,7 @@ export function showLoginPage(req, res) {
 // Handle admin login
 export async function loginAdmin(req, res) {
   try {
-    const connection = await connectDB();
-
+  
     const { email, password } = req.body;
 
     // Validate required fields
@@ -81,7 +78,7 @@ export async function loginAdmin(req, res) {
     }
 
     // Check if user exists
-    const [rows] = await connection.query(
+    const [rows] = await pool.query(
       'SELECT * FROM admin_users WHERE email = ?',
       [email]
     );
@@ -110,7 +107,7 @@ export async function loginAdmin(req, res) {
     };
 
     req.flash('success', `Welcome back ${admin.first_name}!`);
-    return res.redirect('/api/auth/dashboard');
+    return res.redirect('/');
 
   } catch (error) {
     console.error('LOGIN ERROR:', error);

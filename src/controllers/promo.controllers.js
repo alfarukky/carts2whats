@@ -1,0 +1,54 @@
+import { pool } from "../config/db.js";
+
+export async function showPromoEditForm(req, res) {
+  try {
+    const [card] = await pool.query(
+      "SELECT * FROM promo_cards WHERE id = ?",
+      [req.params.id]
+    );
+
+    if (card.length === 0) {
+      req.flash("error", "Promo card not found.");
+      return res.redirect("back");
+    }
+
+    return res.render("edit", {
+      card: card[0],
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Something went wrong.");
+    return res.redirect("back");
+  }
+}
+
+export async function updatePromoCard(req, res) {
+  try {
+    const { title, subtitle, small_text } = req.body;
+    const {id} = req.params
+
+    let imageQuery = "";
+    let params = [title, subtitle, small_text];
+
+    if (req.file) {
+      imageQuery = ", image = ?";
+      params.push(req.file.filename);
+    }
+
+    params.push(id);
+
+    await pool.query(
+      `UPDATE promo_cards
+       SET title = ?, subtitle = ?, small_text = ? ${imageQuery}
+       WHERE id = ?`,
+      params
+    );
+
+    req.flash("success", "Promo card updated successfully.");
+      return res.redirect(`/api/admin/promo/${id}/edit`);
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Failed to update promo card.");
+    return res.redirect("back");
+  }
+}

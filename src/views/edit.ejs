@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head", { title: "Edit promo card" }) %>
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <div class="container py-5">
+      <h2 class="mb-4 fw-semibold">Edit Promo Card</h2>
+        <!-- Back Button -->
+      <a href="/" class="btn btn-secondary mb-4 btn-animate-1">
+        ⬅ Back
+      </a>
+
+      <form
+       action="/api/admin/promo/<%= card.id %>/edit"
+        method="POST"
+        enctype="multipart/form-data"
+        class="p-4 editPromoCard border rounded-3 bg-white shadow-sm"
+      >
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input type="text" name="title" class="form-control" value="<%= card.title %>" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Subtitle</label>
+          <input type="text" name="subtitle" class="form-control" value="<%= card.subtitle %>" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Small Text</label>
+          <input type="text" name="small_text" class="form-control" value="<%= card.small_text %>" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Current Image</label><br />
+          <img src="/uploads/<%= card.image %>" width="120" class="rounded" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Upload New Image</label>
+          <input type="file" name="image" class="form-control" />
+        </div>
+
+        <button class="btn btn-success btn-animate-1">Update Promo Card</button>
+      </form>
+    </div>
+  </body>
+</html>

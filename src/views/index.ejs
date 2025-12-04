@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+  <%- include("partials/errorMsg") %>
+    <nav
+      class="navbar navbar-expand-md border-top d-none d-md-block shadow-sm py-0 pb-3"
+    >
+      <div
+        class="bg-light py-1 mb-1 border-bottom shadow-sm"
+        data-aos="fade-down"
+      >
+        <div class="container m-auto d-flex justify-content-between">
+          <span>Super Value Deals - Save more with coupons</span>
+          <button class="btn btn-sm btn-secondary btn-animate">
+            Quick Actions
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="container py-3 d-flex align-items-center justify-content-between"
+        data-aos="fade-down"
+      >
+        <!-- Logo -->
+        <div class="d-flex align-items-center">
+          <img src="" alt="logo" class="me-2" />
+          <h4 class="m-0 fw-bold text-success">MorishCart</h4>
+        </div>
+
+        <!-- Search -->
+        <div class="flex-grow-1 mx-4 d-none d-md-block">
+          <form class="d-flex" role="search">
+            <input
+              class="form-control"
+              type="search"
+              placeholder="Type to search..."
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-success btn-animate" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+
+        <div class="d-flex align-items-center gap-4">
+          <!-- Heart -->
+          <div class="position-relative">
+            <span
+              class="rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
+            >
+              <i class="fa-solid fa-heart text-success"></i>
+            </span>
+            <span
+              class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
+              >5</span
+            >
+          </div>
+
+          <!-- User -->
+          <div class="position-relative">
+            <span
+              class="rounded-circle border border-success d-flex align-items-center justify-content-center p-2 bg-white"
+            >
+              <i class="fa-solid fa-user text-success"></i>
+            </span>
+          </div>
+
+          <!-- Cart -->
+          <div class="position-relative">
+            <span
+              class="rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
+            >
+              <i class="fa-solid fa-cart-shopping text-success"></i>
+            </span>
+            <span
+              class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
+              >1</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <button
+          class="navbar-toggler"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav align-items-center">
+            <li class="nav-item bg-primary text-white rounded-3 me-3 px-2 py-1">
+              <a class="nav-link" href="#"
+                ><i class="bi bi-grid"></i> All Categories</a
+              >
+            </li>
+
+            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                data-bs-toggle="dropdown"
+              >
+                Products
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Groceries</a></li>
+                <li><a class="dropdown-item" href="#">Household</a></li>
+              </ul>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="./contact.html">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <header>
+      <!-- Hero Slider -->
+      <div class="hero hero--static py-6">
+        <div class="container">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+              <span
+                class="badge bg-success-subtle text-success fw-semibold mb-3"
+              >
+                Fresh deals daily
+              </span>
+
+              <h1 class="display-4 fw-extrabold lh-tight mb-3">
+                Welcome to
+                <span class="text-success text-heading">MorishCart</span>
+              </h1>
+
+              <p class="lead text-muted mb-4">
+                Premium-quality groceries and home essentials delivered fast.
+                Fresh arrivals every day at unbeatable prices.
+              </p>
+
+              <!-- CTA buttons -->
+              <div class="d-flex flex-wrap gap-2 mb-5">
+                <a
+                  href="#products"
+                  class="btn btn-success btn-lg btn-animate-1"
+                >
+                  Shop Now
+                </a>
+                <a href="#categories" class="btn btn-outline-success btn-lg">
+                  Browse Categories
+                </a>
+              </div>
+            </div>
+
+            <!-- Right image -->
+            <div class="col-lg-5 d-none d-lg-block">
+              <div class="hero-media rounded-4 shadow-sm overflow-hidden">
+                <img
+                  src="/images/hero1.jpeg"
+                  class="img-fluid rounded-4"
+                  alt="Fresh groceries"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+   <section class="container my-5">
+  <div class="row g-4">
+
+    <% promoCards.forEach(card => { %>
+      <div class="col-md-4" data-aos="zoom-in">
+        <div class="promo-card p-4 h-100 d-flex flex-column justify-content-between <%= promoColors[card.id] %>">
+          <div>
+            <h4 class="fw-bold mb-3"><%- card.title %></h4>
+            <% if (card.subtitle) { %>
+              <p class="mb-1"><%- card.subtitle %></p>
+            <% } %>
+
+            <% if (card.small_text) { %>
+              <p class="mb-4"><%- card.small_text %></p>
+            <% } %>
+          </div>
+
+          <div class="text-end">
+            <img src="/uploads/<%= card.image %>" class="img-fluid promo-img" />
+          </div>
+
+          <a class="btn btn-dark mt-3">Shop Now</a>
+        </div>
+
+        <% if (admin) { %>
+          <div class="my-2">
+            <a href="/api/admin/promo/<%= card.id %>/edit" class="btn btn-warning btn-sm btn-animate-1">Edit</a>
+          </div>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+</section>
+      <!-- Categories -->
+      <section class="container py-5">
+        <!-- Section Title -->
+        <div class="text-center mb-5">
+          <h2 class="fw-bold text-heading">Shop Popular Categories</h2>
+          <div class="mx-auto line__small line--orange"></div>
+          <div class="mx-auto line line--orange"></div>
+        </div>
+
+        <!-- Category Grid -->
+        <div class="row g-4 text-center">
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/cleaning-products.png"
+                  alt="Cleaning Essentials"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Cleaning Essentials</p>
+            </div>
+          </div>
+
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/vegetable.png"
+                  alt="Fruits & Vegetables"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Fruits & Vegetables</p>
+            </div>
+          </div>
+
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/snacks.png"
+                  alt="Snacks & Munchies"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Snack & Munchies</p>
+            </div>
+          </div>
+
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px"
+              >
+                <img
+                  src="/images/laundry-detergent.png"
+                  alt="Laundry Essentials"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Laundry Essentials</p>
+            </div>
+          </div>
+
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/kitchen.png"
+                  alt="Kitchen Essentials"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Kitchen Essentials</p>
+            </div>
+          </div>
+
+          <!-- Category Item -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/tea-bag.png"
+                  alt="Tea, Coffee & Drinks"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Tea, Coffee & Drinks</p>
+            </div>
+          </div>
+
+          <!-- Row 2 -->
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px"
+              >
+                <img
+                  src="/images/soft-drink.png"
+                  alt="Cold Drinks & Juices"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Cold Drinks & Juices</p>
+            </div>
+          </div>
+
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/personal-care.png"
+                  alt="Personal Care"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Personal Care</p>
+            </div>
+          </div>
+
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px"
+              >
+                <img
+                  src="/images/baby-care.png"
+                  alt="Baby Care"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Baby Care</p>
+            </div>
+          </div>
+
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/tools.png"
+                  alt="Household Tools"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Household Tools</p>
+            </div>
+          </div>
+
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                style="width: 120px; height: 120px"
+              >
+                <img
+                  src="/images/pet-shampoo.png"
+                  alt="Pet Care"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Pet Care</p>
+            </div>
+          </div>
+
+          <div
+            class="col-6 col-md-4 col-lg-2"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="p-3">
+              <div
+                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="/images/containers.png"
+                  alt="Storage & Containers"
+                  class="category__img img-fluid"
+                />
+              </div>
+              <p class="fw-semibold mt-3">Storage & Containers</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- household Collections  -->
+      <section class="services py-5" id="household-collections">
+        <div class="container">
+          <!-- Header -->
+          <div class="text-center mb-5">
+            <h2 class="fw-bold text-heading">HOUSEHOLD COLLECTIONS</h2>
+            <div class="mx-auto line line--blue"></div>
+            <div class="mx-auto line__small line--blue"></div>
+
+            <p class="lead mt-3 text-muted w-75 mx-auto">
+              Discover quality household essentials — from cleaning and laundry
+              supplies to kitchenware and appliance care, all in one convenient
+              store.
+            </p>
+          </div>
+
+          <!-- Product Collection Row -->
+          <div class="row mt-3">
+            <!-- Cleaning Essentials -->
+            <div class="col-lg-4 mb-3" data-aos="fade-up">
+              <div class="service_card">
+                <div class="service_card__side service_card__side--front">
+                  <div
+                    class="service_card__picture service_card__picture--4"
+                  ></div>
+                  <h4 class="service_card__heading">
+                    <span
+                      class="service_card__heading-span service_card__heading-span--4"
+                      >Cleaning Essentials</span
+                    >
+                  </h4>
+                  <div class="service_card__details">
+                    <ul class="service_card__details__list">
+                      <li>
+                        <i class="icon-color--1 fas fa-check-circle"></i>
+                        Surface & Floor Cleaners
+                      </li>
+                      <li>
+                        <i class="icon-color--1 fas fa-check-circle"></i>
+                        Bathroom & Kitchen Supplies
+                      </li>
+                      <li>
+                        <i class="icon-color--1 fas fa-check-circle"></i>
+                        Eco-Friendly Cleaning Tools
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div
+                  class="service_card__side service_card__side--back service_card__side--back-4"
+                >
+                  <h3>Cleaning Essentials</h3>
+                  <p class="lead">
+                    Keep your home spotless with premium-quality cleaning and
+                    disinfectant products from trusted brands.
+                  </p>
+                  <a href="#shop-cleaning" class="card_btn">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Laundry Essentials -->
+            <div class="col-lg-4 mb-3" data-aos="fade-up">
+              <div class="service_card">
+                <div class="service_card__side service_card__side--front">
+                  <div
+                    class="service_card__picture service_card__picture--5"
+                  ></div>
+                  <h4 class="service_card__heading">
+                    <span
+                      class="service_card__heading-span service_card__heading-span--5"
+                      >Laundry Essentials</span
+                    >
+                  </h4>
+                  <div class="service_card__details">
+                    <ul class="service_card__details__list">
+                      <li>
+                        <i class="icon-color--2 fas fa-check-circle"></i>
+                        Detergents & Softeners
+                      </li>
+                      <li>
+                        <i class="icon-color--2 fas fa-check-circle"></i> Stain
+                        Removers & Fresheners
+                      </li>
+                      <li>
+                        <i class="icon-color--2 fas fa-check-circle"></i>
+                        Laundry Bags & Organizers
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div
+                  class="service_card__side service_card__side--back service_card__side--back-5"
+                >
+                  <h3>Laundry Essentials</h3>
+                  <p class="lead">
+                    Enjoy cleaner, fresher clothes with laundry care items that
+                    make washing effortless and effective.
+                  </p>
+                  <a href="#shop-laundry" class="card_btn">Explore Products</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kitchen & Appliance Care -->
+            <div class="col-lg-4 mb-3" data-aos="fade-up">
+              <div class="service_card">
+                <div class="service_card__side service_card__side--front">
+                  <div
+                    class="service_card__picture service_card__picture--6"
+                  ></div>
+                  <h4 class="service_card__heading">
+                    <span
+                      class="service_card__heading-span service_card__heading-span--6"
+                      >Kitchen & Appliance Care</span
+                    >
+                  </h4>
+                  <div class="service_card__details">
+                    <ul class="service_card__details__list">
+                      <li>
+                        <i class="icon-color--3 fas fa-check-circle"></i>
+                        Kitchen Cleaners & Degreasers
+                      </li>
+                      <li>
+                        <i class="icon-color--3 fas fa-check-circle"></i>
+                        Dishwashing Liquids & Sponges
+                      </li>
+                      <li>
+                        <i class="icon-color--3 fas fa-check-circle"></i>
+                        Appliance Maintenance Kits
+                      </li>
+                      <li>
+                        <i class="icon-color--3 fas fa-check-circle"></i>
+                        Household Utility Tools
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div
+                  class="service_card__side service_card__side--back service_card__side--back-6"
+                >
+                  <h3>Kitchen & Appliance Care</h3>
+                  <p>
+                    Keep your kitchen and appliances spotless with our durable,
+                    effective, and affordable cleaning solutions.
+                  </p>
+                  <a href="#shop-kitchen" class="card_btn">View Collection</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="popular-products py-5">
+        <div class="container">
+          <!-- Section Header -->
+          <div class="text-center mb-5">
+            <h2 class="fw-bold text-heading display-6">Popular Products</h2>
+            <div class="mx-auto line__small line--green"></div>
+            <div class="mx-auto line line--green"></div>
+          </div>
+
+          <!-- Product Grid -->
+          <div class="row g-4">
+             <!-- Product Card -->
+            <div class="col-6 col-md-4 col-lg-3 col-xl-2" data-aos="zoom-in-up">
+              <div class="product-card p-3 border rounded-3 position-relative">
+                <span
+                  class="badge bg-danger position-absolute top-0 start-0 m-2"
+                  >Sale</span
+                >
+                <div class="product-img text-center">
+                  <img
+                    src="images/biscuits.jpg"
+                    alt="Product 1"
+                    class="img-fluid"
+                  />
+                </div>
+                <p class="text-muted small mt-3 mb-1">Snack & Munchies</p>
+                <h6 class="fw-bold">Haldiram's Sev Bhujia</h6>
+                <div class="rating text-warning mb-1">
+                  <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                  <i class="fa fa-star-half-alt"></i>
+                  <span class="text-muted small">(149)</span>
+                </div>
+                <p class="mb-1 d-flex justify-content-between">
+                  <span class="fw-bold text-dark">$18</span>
+                  <span class="text-muted text-decoration-line-through small"
+                    >$24</span
+                  >
+                </p>
+                <a class="btn btn-success btn-sm rounded-pill w-100">
+                  Buy Now
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="services py-5 bg-white">
+        <div class="container">
+          <div class="row text-center g-4">
+            <!-- Service 1 -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+              <div class="service-box p-4 border rounded-3 h-100">
+                <div class="icon mb-3 text-primary fs-1">
+                  <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <h5 class="fw-bold">Fast & Reliable Delivery</h5>
+                <p class="text-muted mb-0">
+                  Get your items delivered quickly with Amazon's trusted
+                  logistics network across the country.
+                </p>
+              </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+              <div class="service-box p-4 border rounded-3 h-100">
+                <div class="icon mb-3 text-success fs-1">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+                <h5 class="fw-bold">Secure Payments</h5>
+                <p class="text-muted mb-0">
+                  Pay safely with multiple options — credit card, UPI, Amazon
+                  Pay, and cash on delivery.
+                </p>
+              </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+              <div class="service-box p-4 border rounded-3 h-100">
+                <div class="icon mb-3 text-warning fs-1">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </div>
+                <h5 class="fw-bold">Easy Returns</h5>
+                <p class="text-muted mb-0">
+                  Changed your mind? Return eligible items quickly and get your
+                  refund hassle-free.
+                </p>
+              </div>
+            </div>
+
+            <!-- Service 4 -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up">
+              <div class="service-box p-4 border rounded-3 h-100">
+                <div class="icon mb-3 text-danger fs-1">
+                  <i class="fa-solid fa-headset"></i>
+                </div>
+                <h5 class="fw-bold">24/7 Customer Support</h5>
+                <p class="text-muted mb-0">
+                  Get instant help anytime through chat, phone, or email from
+                  our dedicated support team.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+       <%-include("partials/footer")  %>
+    <!-- Back to Top Button -->
+    <button id="toTopBtn" class="to-top-btn">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        easing: 'ease-out-quart',
+        once: true, // animation happens once
+        offset: 120,
+      });
+    </script>
+  </body>
+</html>
+
