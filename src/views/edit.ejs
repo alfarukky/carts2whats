@@ -6,30 +6,44 @@
 
     <div class="container py-5">
       <h2 class="mb-4 fw-semibold">Edit Promo Card</h2>
-        <!-- Back Button -->
-      <a href="/" class="btn btn-secondary mb-4 btn-animate-1">
-        ⬅ Back
-      </a>
+      <!-- Back Button -->
+      <a href="/" class="btn btn-secondary mb-4 btn-animate-1"> ⬅ Back </a>
 
       <form
-       action="/api/admin/promo/<%= card.id %>/edit"
+        action="/api/admin/promo/<%= card.id %>/edit"
         method="POST"
         enctype="multipart/form-data"
         class="p-4 editPromoCard border rounded-3 bg-white shadow-sm"
       >
         <div class="mb-3">
           <label class="form-label">Title</label>
-          <input type="text" name="title" class="form-control" value="<%= card.title %>" required />
+          <input
+            type="text"
+            name="title"
+            class="form-control"
+            value="<%= card.title %>"
+            required
+          />
         </div>
 
         <div class="mb-3">
           <label class="form-label">Subtitle</label>
-          <input type="text" name="subtitle" class="form-control" value="<%= card.subtitle %>" />
+          <input
+            type="text"
+            name="subtitle"
+            class="form-control"
+            value="<%= card.subtitle %>"
+          />
         </div>
 
         <div class="mb-3">
           <label class="form-label">Small Text</label>
-          <input type="text" name="small_text" class="form-control" value="<%= card.small_text %>" />
+          <input
+            type="text"
+            name="small_text"
+            class="form-control"
+            value="<%= card.small_text %>"
+          />
         </div>
 
         <div class="mb-3">

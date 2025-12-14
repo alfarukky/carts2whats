@@ -1,14 +1,15 @@
-import express from 'express';
-import session from 'express-session';
-import flash from 'connect-flash';
+import express from "express";
+import session from "express-session";
+import flash from "connect-flash";
 import mysqlSession from "express-mysql-session";
-import cookieParser from 'cookie-parser';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
 
-import homeRoute from './routes/home.route.js';
-import adminRoute from './routes/admin.route.js';
-import promoRoute from './routes/promo.route.js';
+import homeRoute from "./routes/home.route.js";
+import adminRoute from "./routes/admin.route.js";
+import promoRoute from "./routes/promo.route.js";
+import productRoute from "./routes/product.route.js";
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -16,12 +17,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
 // 🔥 SESSION + FLASH
@@ -36,12 +37,12 @@ const sessionStore = new MySQLStore({
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'flashsecret',
+    secret: process.env.SESSION_SECRET || "flashsecret",
     resave: false,
     saveUninitialized: true,
     store: sessionStore,
-    cookie: {maxAge: 1000 * 60 * 60 * 24}, // 1 day
-  })
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+  }),
 );
 
 // Flash middleware
@@ -54,8 +55,8 @@ app.use((req, res, next) => {
 
 // Global variables for all views
 app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
   next();
 });
 
@@ -65,11 +66,11 @@ app.use((err, req, res, next) => {
   res.redirect("back");
 });
 
+app.use("/", homeRoute);
 
-app.use('/', homeRoute);
-
-app.use('/api/auth', adminRoute);
-app.use('/api/admin/promo', promoRoute);
+app.use("/api/auth", adminRoute);
+app.use("/api/admin/promo", promoRoute);
+app.use("/api/products", productRoute);
 
 //catch all routes
 // app.get('/*', (req, res) => {

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <div class="container py-5" style="max-width: 700px">
+      <h2 class="fw-bold mb-4">Add New Product</h2>
+
+      <a href="/api/products" class="btn btn-outline-secondary btn-sm mb-3">
+        ← Back to Products
+      </a>
+
+      <form
+        action="/api/products/add"
+        method="POST"
+        enctype="multipart/form-data"
+        class="p-4 border rounded bg-white shadow-sm"
+      >
+        <!-- Product Name -->
+        <div class="mb-3">
+          <label class="form-label">Product Name</label>
+          <input type="text" name="name" class="form-control" required />
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <select name="category" class="form-select" required>
+            <option value="">-- Select Category --</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Household">Household</option>
+            <option value="Drinks">Drinks</option>
+            <option value="Baby Care">Baby Care</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+        <!-- Badge -->
+        <div class="mb-3">
+          <label class="form-label">Badge</label>
+          <select name="badge" class="form-select">
+            <option value="none">None</option>
+            <option value="hot">Hot</option>
+            <option value="sale">Sale</option>
+            <option value="promo">Promo</option>
+            <option value="new">New</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label">Short Description</label>
+          <textarea name="description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Prices -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Current Price ($)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Old Price ($)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="old_price"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="mb-3">
+          <label class="form-label">Rating (1–5)</label>
+          <select name="rating" class="form-select" required>
+            <option value="">-- Select Rating --</option>
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5">5 Stars</option>
+          </select>
+        </div>
+
+        <!-- Review Count -->
+        <div class="mb-3">
+          <label class="form-label">Number of Reviews</label>
+          <input
+            type="number"
+            name="reviews"
+            value="0"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-3">
+          <label class="form-label">Upload Product Image</label>
+          <input type="file" name="image" class="form-control" required />
+        </div>
+
+        <button class="btn btn-success w-100 py-2 fw-semibold">
+          Add Product
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

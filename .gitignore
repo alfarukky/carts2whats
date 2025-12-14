@@ -12,5 +12,6 @@
 /tmp
 *.bak
 *.swp 
+.prettierrc
 commit.md
 src/config/script.js

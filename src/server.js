@@ -1,7 +1,7 @@
-import http from 'http';
-import app from './app.js';
-import { pool } from './config/db.js';
-import { createSuperAdmin } from './config/createSuperAdmin.js'; // Fixed import path
+import http from "http";
+import app from "./app.js";
+import { pool } from "./config/db.js";
+import { createSuperAdmin } from "./config/createSuperAdmin.js"; // Fixed import path
 
 const PORT = process.env.PORT || 3000;
 
@@ -9,7 +9,7 @@ async function startServer() {
   let conn; // Define conn here to be accessible in finally block
   try {
     // 1. Get a database connection
-    conn = await pool.getConnection(); 
+    conn = await pool.getConnection();
     console.log("✅ Database pool connected successfully");
 
     // 2. Initialize Super Admin using the obtained connection

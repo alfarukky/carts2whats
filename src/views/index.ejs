@@ -2,7 +2,7 @@
 <html lang="en">
   <%- include("partials/head") %>
   <body>
-  <%- include("partials/errorMsg") %>
+    <%- include("partials/errorMsg") %>
     <nav
       class="navbar navbar-expand-md border-top d-none d-md-block shadow-sm py-0 pb-3"
     >
@@ -173,39 +173,47 @@
       </div>
     </header>
     <main>
-   <section class="container my-5">
-  <div class="row g-4">
+      <section class="container my-5">
+        <div class="row g-4">
+          <% promoCards.forEach(card => { %>
+          <div class="col-md-4" data-aos="zoom-in">
+            <div
+              class="promo-card p-4 h-100 d-flex flex-column justify-content-between <%= promoColors[card.id] %>"
+            >
+              <div>
+                <h4 class="fw-bold mb-3"><%- card.title %></h4>
+                <% if (card.subtitle) { %>
+                <p class="mb-1"><%- card.subtitle %></p>
+                <% } %>
 
-    <% promoCards.forEach(card => { %>
-      <div class="col-md-4" data-aos="zoom-in">
-        <div class="promo-card p-4 h-100 d-flex flex-column justify-content-between <%= promoColors[card.id] %>">
-          <div>
-            <h4 class="fw-bold mb-3"><%- card.title %></h4>
-            <% if (card.subtitle) { %>
-              <p class="mb-1"><%- card.subtitle %></p>
-            <% } %>
+                <% if (card.small_text) { %>
+                <p class="mb-4"><%- card.small_text %></p>
+                <% } %>
+              </div>
 
-            <% if (card.small_text) { %>
-              <p class="mb-4"><%- card.small_text %></p>
+              <div class="text-end">
+                <img
+                  src="/uploads/<%= card.image %>"
+                  class="img-fluid promo-img"
+                />
+              </div>
+
+              <a class="btn btn-dark mt-3">Shop Now</a>
+            </div>
+
+            <% if (admin) { %>
+            <div class="my-2">
+              <a
+                href="/api/admin/promo/<%= card.id %>/edit"
+                class="btn btn-warning btn-sm btn-animate-1"
+                >Edit</a
+              >
+            </div>
             <% } %>
           </div>
-
-          <div class="text-end">
-            <img src="/uploads/<%= card.image %>" class="img-fluid promo-img" />
-          </div>
-
-          <a class="btn btn-dark mt-3">Shop Now</a>
+          <% }); %>
         </div>
-
-        <% if (admin) { %>
-          <div class="my-2">
-            <a href="/api/admin/promo/<%= card.id %>/edit" class="btn btn-warning btn-sm btn-animate-1">Edit</a>
-          </div>
-        <% } %>
-      </div>
-    <% }); %>
-  </div>
-</section>
+      </section>
       <!-- Categories -->
       <section class="container py-5">
         <!-- Section Title -->
@@ -611,54 +619,115 @@
           </div>
         </div>
       </section>
-
       <section class="popular-products py-5">
         <div class="container">
           <!-- Section Header -->
-          <div class="text-center mb-5">
+          <div class="text-center mb-3">
             <h2 class="fw-bold text-heading display-6">Popular Products</h2>
             <div class="mx-auto line__small line--green"></div>
             <div class="mx-auto line line--green"></div>
           </div>
 
+          <!-- If no popular products -->
+          <% if (popularProducts.length === 0) { %>
+          <p class="text-center text-muted fs-5">
+            No popular products selected yet.
+          </p>
+          <% if (admin) { %>
+          <div class="text-center mb-3">
+            <a href="/api/products" class="btn btn-success"> Add Products </a>
+          </div>
+          <% } %>
+          <% } else { %>
+          <% if (admin) { %>
+          <div class="text-center mb-3">
+            <a href="/api/products" class="btn btn-success"> Add Products </a>
+          </div>
+          <% } %>
           <!-- Product Grid -->
           <div class="row g-4">
-             <!-- Product Card -->
+            <% popularProducts.forEach(product => { %>
             <div class="col-6 col-md-4 col-lg-3 col-xl-2" data-aos="zoom-in-up">
+              <!-- Product Card -->
               <div class="product-card p-3 border rounded-3 position-relative">
+                <!-- Badge -->
                 <span
-                  class="badge bg-danger position-absolute top-0 start-0 m-2"
-                  >Sale</span
+                  class="badge <%= badgeClasses[product.badge] %> position-absolute top-0 start-0 m-2"
                 >
+                  <%= product.badge !== "none" ? product.badge.toUpperCase() :
+                  "" %>
+                </span>
+
+                <!-- Product Image -->
                 <div class="product-img text-center">
                   <img
-                    src="images/biscuits.jpg"
-                    alt="Product 1"
+                    src="/uploads/<%= product.image %>"
+                    alt="<%= product.name %>"
                     class="img-fluid"
                   />
                 </div>
-                <p class="text-muted small mt-3 mb-1">Snack & Munchies</p>
-                <h6 class="fw-bold">Haldiram's Sev Bhujia</h6>
-                <div class="rating text-warning mb-1">
-                  <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                  <i class="fa fa-star-half-alt"></i>
-                  <span class="text-muted small">(149)</span>
-                </div>
-                <p class="mb-1 d-flex justify-content-between">
-                  <span class="fw-bold text-dark">$18</span>
-                  <span class="text-muted text-decoration-line-through small"
-                    >$24</span
-                  >
+
+                <!-- Category -->
+                <p class="text-muted small mt-3 mb-1">
+                  <%= product.category %>
                 </p>
+
+                <!-- Name -->
+                <h6 class="fw-bold"><%= product.name %></h6>
+
+                <!-- Rating -->
+                <div class="rating text-warning mb-1">
+                  <% for (let s = 1; s <= 5; s++) { %> <% if (s <=
+                  product.rating) { %>
+                  <i class="fa fa-star"></i>
+                  <% } else { %>
+                  <i class="fa fa-star-o"></i>
+                  <% } %>
+                  <% } %>
+                  <span class="text-muted small">(<%= product.reviews %>)</span>
+                </div>
+
+                <!-- Price -->
+                <p class="mb-1 d-flex justify-content-between">
+                  <span class="fw-bold text-dark">$<%= product.price %></span>
+                  <% if (product.old_price) { %>
+                  <span class="text-muted text-decoration-line-through small">
+                    $<%= product.old_price %>
+                  </span>
+                  <% } %>
+                </p>
+
                 <a class="btn btn-success btn-sm rounded-pill w-100">
-                  Buy Now
+                  <i class="fa fa-shopping-cart me-2"></i> Quick Add
                 </a>
               </div>
+
+              <!-- Admin Controls -->
+              <% if (admin) { %>
+              <div class="mt-2 d-flex justify-content-between">
+                <a
+                  href="/api/products/<%= product.id %>/edit"
+                  class="btn btn-warning btn-sm w-50 me-1"
+                  >Edit</a
+                >
+
+                <form
+                  action="/api/products/<%= product.id %>/remove-popular"
+                  method="POST"
+                  class="w-50 ms-1"
+                >
+                  <button class="btn btn-danger btn-sm w-100">Remove</button>
+                </form>
+              </div>
+              <% } %>
             </div>
+            <% }); %>
           </div>
+
+          <% } %>
         </div>
       </section>
+
       <section class="services py-5 bg-white">
         <div class="container">
           <div class="row text-center g-4">
@@ -721,7 +790,7 @@
         </div>
       </section>
     </main>
-       <%-include("partials/footer")  %>
+    <%-include("partials/footer")  %>
     <!-- Back to Top Button -->
     <button id="toTopBtn" class="to-top-btn">
       <i class="fa-solid fa-arrow-up"></i>
@@ -732,11 +801,10 @@
     <script>
       AOS.init({
         duration: 800,
-        easing: 'ease-out-quart',
+        easing: "ease-out-quart",
         once: true, // animation happens once
         offset: 120,
       });
     </script>
   </body>
 </html>
-

@@ -7,7 +7,6 @@
     <section class="login-section">
       <div class="container py-5">
         <div class="row justify-content-center align-items-center">
-
           <!-- Illustration -->
           <div class="col-md-6 text-center mb-4" data-aos="fade-right">
             <img
@@ -20,7 +19,6 @@
           <!-- Login Form -->
           <div class="col-md-6" data-aos="fade-left">
             <div class="p-5 bg-white rounded-4 shadow-sm">
-
               <h2 class="fw-bold text-dark mb-2 text-heading">
                 Sign in to Admin Panel
               </h2>
@@ -30,7 +28,6 @@
 
               <form id="adminLoginForm" action="/api/auth/login" method="POST">
                 <div class="row g-3">
-
                   <div class="col-12">
                     <input
                       type="email"
@@ -53,7 +50,9 @@
                     />
                   </div>
 
-                  <div class="d-flex justify-content-between align-items-center">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
                     <div>
                       <input
                         type="checkbox"
@@ -78,7 +77,6 @@
                       Sign In as Admin
                     </button>
                   </div>
-
                 </div>
               </form>
 
@@ -88,10 +86,8 @@
                   Sign Up
                 </a>
               </p>
-
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -102,7 +98,7 @@
     <script src="/js/aos.js"></script>
 
     <script>
-      AOS.init({ duration: 900, easing: 'ease-out-cubic', once: true });
+      AOS.init({ duration: 900, easing: "ease-out-cubic", once: true });
     </script>
   </body>
 </html>
