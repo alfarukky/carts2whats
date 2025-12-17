@@ -10,8 +10,15 @@
         class="bg-light py-1 mb-1 border-bottom shadow-sm"
         data-aos="fade-down"
       >
-        <div class="container m-auto d-flex justify-content-between">
-          <span>Super Value Deals - Save more with coupons</span>
+        <div
+          class="container m-auto d-flex justify-content-between align-items-center"
+        >
+          <div class="overflow-hidden flex-grow-1 me-3">
+            <span class="deal-marquee">
+              Super Value Deals - Save more with coupons
+            </span>
+          </div>
+
           <button class="btn btn-sm btn-secondary btn-animate">
             Quick Actions
           </button>
@@ -58,12 +65,29 @@
           </div>
 
           <!-- User -->
-          <div class="position-relative">
-            <span
-              class="rounded-circle border border-success d-flex align-items-center justify-content-center p-2 bg-white"
+          <!-- User / Auth -->
+          <div class="position-relative d-flex align-items-center gap-2">
+            <% if (admin) { %>
+            <!-- Logged in -->
+            <span class="fw-semibold text-success">
+              Hi, <%= admin.firstName %>
+            </span>
+
+            <form action="/api/auth/logout" method="POST">
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                Logout
+              </button>
+            </form>
+
+            <% } else { %>
+            <!-- Not logged in -->
+            <a
+              href="/api/auth/login"
+              class="rounded-circle border border-success d-flex align-items-center justify-content-center p-2 bg-white text-decoration-none"
             >
               <i class="fa-solid fa-user text-success"></i>
-            </span>
+            </a>
+            <% } %>
           </div>
 
           <!-- Cart -->
@@ -147,12 +171,12 @@
               <!-- CTA buttons -->
               <div class="d-flex flex-wrap gap-2 mb-5">
                 <a
-                  href="#products"
+                  href="#popular-products"
                   class="btn btn-success btn-lg btn-animate-1"
                 >
                   Shop Now
                 </a>
-                <a href="#categories" class="btn btn-outline-success btn-lg">
+                <a href="/api/products" class="btn btn-outline-success btn-lg">
                   Browse Categories
                 </a>
               </div>
@@ -176,7 +200,7 @@
       <section class="container my-5">
         <div class="row g-4">
           <% promoCards.forEach(card => { %>
-          <div class="col-md-4" data-aos="zoom-in">
+          <div class="col-md-4 mb-3" data-aos="zoom-in">
             <div
               class="promo-card p-4 h-100 d-flex flex-column justify-content-between <%= promoColors[card.id] %>"
             >
@@ -597,10 +621,6 @@
                         <i class="icon-color--3 fas fa-check-circle"></i>
                         Appliance Maintenance Kits
                       </li>
-                      <li>
-                        <i class="icon-color--3 fas fa-check-circle"></i>
-                        Household Utility Tools
-                      </li>
                     </ul>
                   </div>
                 </div>
@@ -619,7 +639,7 @@
           </div>
         </div>
       </section>
-      <section class="popular-products py-5">
+      <section class="popular-products py-5" id="popular-products">
         <div class="container">
           <!-- Section Header -->
           <div class="text-center mb-3">
@@ -635,13 +655,17 @@
           </p>
           <% if (admin) { %>
           <div class="text-center mb-3">
-            <a href="/api/products" class="btn btn-success"> Add Products </a>
+            <a href="/api/products" class="btn btn-success btn-animate-1">
+              Add Products
+            </a>
           </div>
           <% } %>
           <% } else { %>
           <% if (admin) { %>
           <div class="text-center mb-3">
-            <a href="/api/products" class="btn btn-success"> Add Products </a>
+            <a href="/api/products" class="btn btn-success btn-animate-1">
+              Add Products
+            </a>
           </div>
           <% } %>
           <!-- Product Grid -->
@@ -697,7 +721,7 @@
                   <% } %>
                 </p>
 
-                <a class="btn btn-success btn-sm rounded-pill w-100">
+                <a class="btn btn-outline-success btn-sm w-100">
                   <i class="fa fa-shopping-cart me-2"></i> Quick Add
                 </a>
               </div>
@@ -711,13 +735,11 @@
                   >Edit</a
                 >
 
-                <form
-                  action="/api/products/<%= product.id %>/remove-popular"
-                  method="POST"
-                  class="w-50 ms-1"
-                >
-                  <button class="btn btn-danger btn-sm w-100">Remove</button>
-                </form>
+                <a
+                  href="/api/products/<%= product.id %>/toggle-popular"
+                  class="btn btn-danger btn-sm w-50 ms-1"
+                  >Remove
+                </a>
               </div>
               <% } %>
             </div>

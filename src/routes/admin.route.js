@@ -1,22 +1,25 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   registerAdmin,
   showRegisterPage,
   showLoginPage,
   loginAdmin,
-} from '../controllers/admin.controllers.js';
+  logoutAdmin,
+} from "../controllers/admin.controllers.js";
 
 const adminRoute = Router();
 
 // Show form
-adminRoute.get('/register', showRegisterPage);
+adminRoute.get("/register", showRegisterPage);
 
 // Handle form submission
-adminRoute.post('/register', registerAdmin);
-
+adminRoute.post("/register", registerAdmin);
 
 // LOGIN
-adminRoute.get('/login', showLoginPage);
-adminRoute.post('/login', loginAdmin);
+adminRoute.get("/login", showLoginPage);
+adminRoute.post("/login", loginAdmin);
+
+// LOGOUT
+adminRoute.post("/logout", logoutAdmin);
 
 export default adminRoute;

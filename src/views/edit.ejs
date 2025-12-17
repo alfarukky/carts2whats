@@ -4,7 +4,7 @@
   <body>
     <%- include("partials/errorMsg") %>
 
-    <div class="container py-5">
+    <section class="container editPromoCard py-5">
       <h2 class="mb-4 fw-semibold">Edit Promo Card</h2>
       <!-- Back Button -->
       <a href="/" class="btn btn-secondary mb-4 btn-animate-1"> ⬅ Back </a>
@@ -13,7 +13,7 @@
         action="/api/admin/promo/<%= card.id %>/edit"
         method="POST"
         enctype="multipart/form-data"
-        class="p-4 editPromoCard border rounded-3 bg-white shadow-sm"
+        class="p-4 border rounded-3 bg-white shadow-sm"
       >
         <div class="mb-3">
           <label class="form-label">Title</label>
@@ -58,6 +58,6 @@
 
         <button class="btn btn-success btn-animate-1">Update Promo Card</button>
       </form>
-    </div>
+    </section>
   </body>
 </html>

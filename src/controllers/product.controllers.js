@@ -1,19 +1,40 @@
-import { title } from "process";
 import { pool } from "../config/db.js";
 import { badgeClasses } from "../utils/admin.utils.js";
 
-// PUBLIC + ADMIN: Show all products
+/* ===============================
+   PUBLIC + ADMIN: List Products
+================================ */
 export async function listProducts(req, res) {
   try {
-    const [products] = await pool.query(
-      "SELECT * FROM products ORDER BY id DESC",
-    );
+    const { category, sort } = req.query;
+
+    let query = "SELECT * FROM products";
+    const params = [];
+
+    // FILTER: Category
+    if (category) {
+      query += " WHERE category = ?";
+      params.push(category);
+    }
+
+    // SORTING
+    if (sort === "price_asc") {
+      query += " ORDER BY price ASC";
+    } else if (sort === "price_desc") {
+      query += " ORDER BY price DESC";
+    } else {
+      // Default: newest first
+      query += " ORDER BY id DESC";
+    }
+
+    const [products] = await pool.query(query, params);
 
     res.render("product", {
       title: "All Products – morishCart",
       products,
       badgeClasses,
       admin: req.session.admin || null,
+      filters: { category, sort }, // 👈 important
     });
   } catch (err) {
     console.error("LIST PRODUCTS ERROR:", err);
@@ -22,7 +43,9 @@ export async function listProducts(req, res) {
   }
 }
 
-// ADMIN: Show add form
+/* ===============================
+   ADMIN: Show Add Product Form
+================================ */
 export function showAddProductForm(req, res) {
   res.render("addProduct", {
     title: "Add New Product – morishCart",
@@ -30,7 +53,9 @@ export function showAddProductForm(req, res) {
   });
 }
 
-// ADMIN: Add new product
+/* ===============================
+   ADMIN: Add Product
+================================ */
 export async function addProduct(req, res) {
   try {
     const {
@@ -42,26 +67,36 @@ export async function addProduct(req, res) {
       old_price,
       rating,
       reviews,
+      video_url,
     } = req.body;
 
-    const image = req.file ? req.file.filename : null;
+    if (!name || !category || !price || !req.file) {
+      req.flash("error", "Please fill all required fields.");
+      return res.redirect("back");
+    }
+
+    if (video_url && !video_url.startsWith("http")) {
+      req.flash("error", "Video URL must be a valid link.");
+      return res.redirect("back");
+    }
 
     await pool.query(
       `
       INSERT INTO products 
-      (name, category, badge, description, price, old_price, rating, reviews, image)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (name, category, badge, description, price, old_price, rating, reviews, image, video_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         name,
         category,
-        badge,
+        badge || "none",
         description,
         price,
-        old_price,
-        rating,
-        reviews,
+        old_price || null,
+        rating || 0,
+        reviews || 0,
         req.file.filename,
+        video_url || null,
       ],
     );
 
@@ -70,11 +105,13 @@ export async function addProduct(req, res) {
   } catch (err) {
     console.error("ADD PRODUCT ERROR:", err);
     req.flash("error", "Failed to add product.");
-    return res.redirect("back");
+    res.redirect("back");
   }
 }
 
-// ADMIN: Show edit form
+/* ===============================
+   ADMIN: Show Edit Product Form
+================================ */
 export async function showEditProductForm(req, res) {
   try {
     const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
@@ -94,11 +131,13 @@ export async function showEditProductForm(req, res) {
   } catch (err) {
     console.error("SHOW EDIT ERROR:", err);
     req.flash("error", "Cannot load product.");
-    return res.redirect("back");
+    res.redirect("back");
   }
 }
 
-// ADMIN: Update product
+/* ===============================
+   ADMIN: Update Product
+================================ */
 export async function updateProduct(req, res) {
   try {
     const {
@@ -110,14 +149,18 @@ export async function updateProduct(req, res) {
       old_price,
       rating,
       reviews,
+      video_url,
     } = req.body;
 
-    const id = req.params.id;
+    if (video_url && !video_url.startsWith("http")) {
+      req.flash("error", "Video URL must be a valid link.");
+      return res.redirect("back");
+    }
 
     let query = `
-      UPDATE products 
-      SET name = ?, category = ?, badge = ?, description = ?, 
-          price = ?, old_price = ?, rating = ?, reviews = ?
+      UPDATE products
+      SET name = ?, category = ?, badge = ?, description = ?,
+          price = ?, old_price = ?, rating = ?, reviews = ?, video_url = ?
     `;
 
     const params = [
@@ -127,8 +170,9 @@ export async function updateProduct(req, res) {
       description,
       price,
       old_price || null,
-      rating,
-      reviews,
+      rating || 0,
+      reviews || 0,
+      video_url || null,
     ];
 
     if (req.file) {
@@ -137,61 +181,63 @@ export async function updateProduct(req, res) {
     }
 
     query += " WHERE id = ?";
-    params.push(id);
+    params.push(req.params.id);
 
     await pool.query(query, params);
 
     req.flash("success", "Product updated successfully!");
-
-    // Redirect to product list (admin workflow)
-    return res.redirect("/api/products");
+    res.redirect("/api/products");
   } catch (err) {
     console.error("UPDATE PRODUCT ERROR:", err);
     req.flash("error", "Failed to update product.");
-    return res.redirect("back");
+    res.redirect("back");
   }
 }
 
-// ADMIN: Delete product
+/* ===============================
+   ADMIN: Delete Product
+================================ */
 export async function deleteProduct(req, res) {
   try {
     await pool.query("DELETE FROM products WHERE id = ?", [req.params.id]);
 
-    req.flash("success", "Product deleted sucessfully.");
-    return res.redirect("/api/products");
+    req.flash("success", "Product deleted successfully.");
+    res.redirect("/api/products");
   } catch (err) {
     console.error("DELETE PRODUCT ERROR:", err);
     req.flash("error", "Deletion failed.");
-    return res.redirect("back");
+    res.redirect("back");
   }
 }
 
-// ADMIN: Mark/Unmark product as popular
+/* ===============================
+   ADMIN: Toggle Popular
+================================ */
 export async function togglePopular(req, res) {
   try {
-    const id = req.params.id;
-
     const [[product]] = await pool.query(
       "SELECT is_popular FROM products WHERE id = ?",
-      [id],
+      [req.params.id],
     );
 
     const newStatus = product.is_popular ? 0 : 1;
 
     await pool.query("UPDATE products SET is_popular = ? WHERE id = ?", [
       newStatus,
-      id,
+      req.params.id,
     ]);
 
     req.flash(
       "success",
-      newStatus ? "Product added to Popular Section!" : "Removed from Popular.",
+      newStatus
+        ? "Product added to Popular Section!"
+        : "Product removed from Popular Section.",
     );
 
-    return res.redirect("/api/products");
+    res.redirect("/api/products");
   } catch (err) {
     console.error("TOGGLE POPULAR ERROR:", err);
     req.flash("error", "Failed to update popular status.");
-    return res.redirect("back");
+    res.redirect("back");
   }
 }

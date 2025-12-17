@@ -80,25 +80,86 @@
 
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav align-items-center">
-            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="">About</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
             <li class="nav-item">
-              <a class="nav-link" href="./contact.html">Contact</a>
+              <a class="nav-link" href="/api/contact">Contact</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
     <div class="container py-3">
-      <h2 class="fw-bold text-heading text-center mb-5">
+      <h2 class="fw-bold text-heading text-center my-3">
         Explore Our Products
       </h2>
+      <div class="d-flex justify-content-end align-items-center mb-4">
+        <!-- Filters -->
+        <form method="GET" action="/api/products" class="d-flex gap-2">
+          <select
+            name="category"
+            class="form-select form-select-sm"
+            onchange="this.form.submit()"
+          >
+            <option value="">All Categories</option>
+
+            <% const categories = [
+              "Groceries",
+              "Personal Care",
+              "Snacks",
+              "Household",
+              "Drinks",
+              "Baby Care",
+              "Others"
+            ]; %>
+
+            <% categories.forEach(cat => { %>
+              <option
+                value="<%= cat %>"
+                <%= filters?.category === cat ? "selected" : "" %>
+              >
+                <%= cat %>
+              </option>
+            <% }) %>
+          </select>
+
+          <!-- Sort Filter -->
+          <select
+            name="sort"
+            class="form-select form-select-sm"
+            onchange="this.form.submit()"
+          >
+            <option value="">Sort</option>
+            <option
+              value="newest"
+              <%= filters?.sort === "newest" ? "selected" : "" %>
+            >
+              Newest
+            </option>
+            <option
+              value="price_asc"
+              <%= filters?.sort === "price_asc" ? "selected" : "" %>
+            >
+               Price: Low → High
+            </option>
+            <option
+              value="price_desc"
+              <%= filters?.sort === "price_desc" ? "selected" : "" %>
+            >
+             Price: High → Low
+            </option>
+          </select>
+
+        </form>
+      </div>
 
       <% if (admin) { %>
-      <a href="/api/products/add" class="btn btn-success mb-3"
-        >Add New Product</a
-      >
+      <a href="/api/products/add" class="btn btn-success mb-3 btn-animate-1">
+        <i class="fa fa-plus"></i>
+        Add New Product
+      </a>
+
       <% } %>
 
       <div class="row g-4">
@@ -151,11 +212,26 @@
             </p>
 
             <!-- Add to Cart Button -->
-            <a class="btn btn-success btn-sm rounded-pill w-100">
+            <a class="btn btn-outline-success btn-sm w-100">
               <i class="fa fa-shopping-cart me-2"></i> Add to Cart
             </a>
+            <!-- Modal -->
+            <button
+              class="btn btn-outline-dark btn-sm w-100 mt-2"
+              data-bs-toggle="modal"
+              data-bs-target="#productModal"
+              data-id="<%= product.id %>"
+              data-name="<%= product.name %>"
+              data-category="<%= product.category %>"
+              data-description="<%= product.description || '' %>"
+              data-price="<%= product.price %>"
+              data-oldprice="<%= product.old_price || '' %>"
+              data-image="/uploads/<%= product.image %>"
+              data-video="<%= product.video_url || '' %>"
+            >
+              View Details
+            </button>
           </div>
-
           <!-- Admin Controls -->
           <% if (admin) { %>
           <div class="mt-2 d-flex flex-column">
@@ -190,11 +266,62 @@
         <% }) %>
       </div>
     </div>
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="modalProductName"></h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="row g-4">
+              <!-- Image -->
+              <div class="col-md-6 text-center">
+                <img
+                  id="modalProductImage"
+                  src=""
+                  class="img-fluid rounded"
+                  alt=""
+                />
+              </div>
+
+              <!-- Details -->
+              <div class="col-md-6">
+                <p class="text-muted mb-1" id="modalProductCategory"></p>
+
+                <p id="modalProductDescription" class="small"></p>
+
+                <div class="d-flex align-items-center mb-3">
+                  <span class="fw-bold fs-4 me-2" id="modalProductPrice"></span>
+                  <span
+                    class="text-muted text-decoration-line-through small"
+                    id="modalProductOldPrice"
+                  ></span>
+                </div>
+                <div>
+                  <!-- Watch Video -->
+                  <a
+                    id="modalVideoBtn"
+                    target="_blank"
+                    class="btn btn-outline-dark d-none"
+                  >
+                    ▶ Watch Video
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <%-include("partials/footer")  %>
-    <!-- Back to Top Button -->
-    <button id="toTopBtn" class="to-top-btn">
-      <i class="fa-solid fa-arrow-up"></i>
-    </button>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/script.js"></script>
     <script src="/js/aos.js"></script>
