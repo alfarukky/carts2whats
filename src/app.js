@@ -10,6 +10,11 @@ import homeRoute from "./routes/home.route.js";
 import adminRoute from "./routes/admin.route.js";
 import promoRoute from "./routes/promo.route.js";
 import productRoute from "./routes/product.route.js";
+import checkoutRoute from "./routes/checkout.route.js";
+import postRoute from "./routes/post.route.js";
+import contactRoute from "./routes/contact.route.js";
+import orderVerificationRoute from "./routes/orderVerification.route.js";
+import couponRoute from "./routes/coupon.route.js";
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +34,7 @@ app.use(cookieParser());
 const MySQLStore = mysqlSession(session);
 const sessionStore = new MySQLStore({
   host: process.env.DB_HOST,
-  port: 3306,
+  port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
@@ -67,10 +72,15 @@ app.use((err, req, res, next) => {
 });
 
 app.use("/", homeRoute);
+app.use("/api/checkout", checkoutRoute);
 
 app.use("/api/auth", adminRoute);
 app.use("/api/admin/promo", promoRoute);
 app.use("/api/products", productRoute);
+app.use("/api/posts", postRoute);
+app.use("/contact", contactRoute);
+app.use("/api/admin/orders", orderVerificationRoute);
+app.use("/api/admin/coupons", couponRoute);
 
 //catch all routes
 // app.get('/*', (req, res) => {

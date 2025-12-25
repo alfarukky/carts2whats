@@ -75,16 +75,63 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!form) return;
 
   form.addEventListener("submit", function (event) {
-    event.preventDefault();
+    // Clear previous errors
+    document.querySelectorAll(".error").forEach((error) => {
+      error.textContent = "";
+      error.classList.remove("visible");
+    });
 
-    flashMessage.innerHTML =
-      '<div class="alert alert-success mt-3">✅ Thank you for contacting MorishCart! We’ll get back to you shortly.</div>';
+    let isValid = true;
 
-    form.reset();
+    // Validate name
+    const name = document.getElementById("name").value.trim();
+    if (!name) {
+      const nameError = document.getElementById("nameError");
+      nameError.textContent = "Name is required";
+      nameError.classList.add("visible");
+      isValid = false;
+    }
 
-    setTimeout(() => {
-      flashMessage.innerHTML = "";
-    }, 3000);
+    // Validate email
+    const email = document.getElementById("email").value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      const emailError = document.getElementById("emailError");
+      emailError.textContent = "Email is required";
+      emailError.classList.add("visible");
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      const emailError = document.getElementById("emailError");
+      emailError.textContent = "Please enter a valid email";
+      emailError.classList.add("visible");
+      isValid = false;
+    }
+
+    // Validate subject
+    const subject = document.getElementById("subject").value.trim();
+    if (!subject) {
+      const subjectError = document.getElementById("subjectError");
+      subjectError.textContent = "Subject is required";
+      subjectError.classList.add("visible");
+      isValid = false;
+    }
+
+    // Validate message
+    const message = document.getElementById("message").value.trim();
+    if (!message) {
+      const messageError = document.getElementById("messageError");
+      messageError.textContent = "Message is required";
+      messageError.classList.add("visible");
+      isValid = false;
+    }
+
+    // If validation fails, prevent form submission
+    if (!isValid) {
+      event.preventDefault();
+      return false;
+    }
+
+    // If validation passes, let the form submit to backend
   });
 });
 
@@ -95,3 +142,45 @@ const yearEl = document.getElementById("current-year");
 if (yearEl) {
   yearEl.textContent = new Date().getFullYear();
 }
+
+/* ===============================
+   ADD TO CART BUTTON HANDLER
+================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.addEventListener("click", (e) => {
+    const btn = e.target.closest(".add-to-cart-btn");
+    if (!btn) return;
+
+    const product = {
+      id: btn.dataset.id,
+      name: btn.dataset.name,
+      price: parseFloat(btn.dataset.price),
+      image: btn.dataset.image,
+    };
+
+    addToCart(product);
+
+    btn.innerHTML = "✓ Added";
+    btn.disabled = true;
+
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa fa-shopping-cart me-2"></i> Add to Cart';
+      btn.disabled = false;
+    }, 900);
+  });
+});
+
+/* ===============================
+   CART OFFCANVAS RENDER
+================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  const cartOffcanvas = document.getElementById("cartOffcanvas");
+  if (!cartOffcanvas) return;
+
+  cartOffcanvas.addEventListener("shown.bs.offcanvas", renderCart);
+});
+
+//change coupon code to upperCase
+document.getElementById("code").addEventListener("input", function () {
+  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+});

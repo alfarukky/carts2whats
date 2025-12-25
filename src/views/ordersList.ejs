@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-heading">Order Verifications</h2>
+        <a href="/" class="btn btn-secondary btn-animate-1">← Back to Site</a>
+      </div>
+
+      <!-- Quick Lookup -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Quick Order Lookup</h5>
+          <form
+            action="/api/admin/orders/lookup"
+            method="POST"
+            class="d-flex gap-2"
+          >
+            <input
+              type="text"
+              name="orderId"
+              class="form-control border-label"
+              placeholder="Enter Order ID (e.g., MC-8F3A9C)"
+              required
+              style="text-transform: uppercase"
+            />
+            <button type="submit" class="btn btn-primary btn-animate">
+              Lookup
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="mb-3">
+        <div class="btn-group" role="group">
+          <a
+            href="/api/admin/orders?status=all"
+            class="btn <%= currentStatus === 'all' ? 'btn-primary' : 'btn-outline-primary' %>"
+          >
+            All Orders
+          </a>
+          <a
+            href="/api/admin/orders?status=pending"
+            class="btn <%= currentStatus === 'pending' ? 'btn-warning' : 'btn-outline-warning' %>"
+          >
+            Pending
+          </a>
+          <a
+            href="/api/admin/orders?status=verified"
+            class="btn <%= currentStatus === 'verified' ? 'btn-success' : 'btn-outline-success' %>"
+          >
+            Verified
+          </a>
+          <a
+            href="/api/admin/orders?status=cancelled"
+            class="btn <%= currentStatus === 'cancelled' ? 'btn-danger' : 'btn-outline-danger' %>"
+          >
+            Cancelled
+          </a>
+        </div>
+      </div>
+
+      <!-- Orders List -->
+      <% if (orders.length === 0) { %>
+      <div class="alert alert-info">
+        <i class="fa fa-info-circle me-2"></i>
+        No orders found for the selected filter.
+      </div>
+      <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Amount</th>
+              <th>Coupon</th>
+              <th>Status</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders.forEach(order => { %>
+            <tr>
+              <td>
+                <code><%= order.order_id %></code>
+              </td>
+              <td>
+                <strong>$<%= order.total_amount %></strong>
+              </td>
+              <td>
+                <% if (order.coupon_code) { %>
+                <small class="text-success">
+                  <%= order.coupon_code %><br />
+                  <span class="text-muted"
+                    >-$<%= order.discount_amount || 0 %></span
+                  >
+                </small>
+                <% } else { %>
+                <small class="text-muted">-</small>
+                <% } %>
+              </td>
+              <td>
+                <% if (order.status === 'pending') { %>
+                <span class="badge bg-warning">Pending</span>
+                <% } else if (order.status === 'verified') { %>
+                <span class="badge bg-success">Verified</span>
+                <% } else { %>
+                <span class="badge bg-danger">Cancelled</span>
+                <% } %>
+              </td>
+              <td>
+                <%= order.customer_name || '-' %>
+              </td>
+              <td>
+                <%= order.customer_phone || '-' %>
+              </td>
+              <td>
+                <small
+                  ><%= new Date(order.created_at).toLocaleDateString() %></small
+                >
+              </td>
+              <td>
+                <a
+                  href="/api/admin/orders/<%= order.order_id %>/verify"
+                  class="btn btn-sm btn-primary btn-animate-1"
+                >
+                  Manage
+                </a>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

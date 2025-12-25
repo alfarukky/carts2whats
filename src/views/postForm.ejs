@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %>
+<body>
+  <%- include('partials/errorMsg') %>
+  
+  <section class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8 form-product">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h1 class="fw-semibold"><%= title %></h1>
+          
+          <a
+          href="/api/posts"
+          class="btn btn-secondary btn-sm btn-animate-1"
+        >
+          ← Back to Posts
+        </a>
+        </div>
+
+        <form action="/api/posts/admin/save" method="POST">
+          <% if (post) { %>
+          <input type="hidden" name="id" value="<%= post.id %>">
+          <% } %>
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Title *</label>
+            <input type="text" class="form-control" id="title" name="title" 
+                   value="<%= post ? post.title : '' %>" 
+                   placeholder="e.g., 10 Best Cleaning Tips for Your Home"
+                   required>
+            <small class="form-text text-muted">The main headline that appears at the top of your blog post</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="slug" class="form-label">Slug *</label>
+            <input type="text" class="form-control" id="slug" name="slug" 
+                   value="<%= post ? post.slug : '' %>" 
+                   placeholder="10-best-cleaning-tips-for-your-home"
+                   required>
+            <small class="form-text text-muted">URL-friendly version of the title (auto-generated from title)</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" name="type">
+              <option value="article" <%= post && post.type === 'article' ? 'selected' : '' %>>Article</option>
+              <option value="event" <%= post && post.type === 'event' ? 'selected' : '' %>>Event</option>
+            </select>
+            <small class="form-text text-muted">Choose "Article" for blog posts, "Event" for announcements</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="excerpt" class="form-label">Excerpt</label>
+            <textarea class="form-control" id="excerpt" name="excerpt" rows="3" 
+                      placeholder="A brief summary of your post that appears in previews and search results..."><%= post ? post.excerpt || '' : '' %></textarea>
+            <small class="form-text text-muted">Short description (1-2 sentences) shown in post previews</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="content" class="form-label">Content *</label>
+            <textarea class="form-control" id="content" name="content" rows="10" 
+                      placeholder="Write your full blog post content here. You can use **bold** and *italic* formatting..." 
+                      required><%= post ? post.content || '' : '' %></textarea>
+            <small class="form-text text-muted">Main article content. Use **bold** or *italic* for formatting</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="featured_image" class="form-label">Featured Image URL</label>
+            <input type="text" class="form-control" id="featured_image" name="featured_image" 
+                   value="<%= post ? post.featured_image || '' : '' %>"
+                   placeholder="https://example.com/image.jpg or /uploads/image.jpg">
+            <small class="form-text text-muted">Main image displayed with your post (optional)</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status">
+              <option value="draft" <%= post && post.status === 'draft' ? 'selected' : '' %>>Draft</option>
+              <option value="published" <%= !post || post.status === 'published' ? 'selected' : '' %>>Published</option>
+            </select>
+            <small class="form-text text-muted">Draft = Save without publishing, Published = Live on website</small>
+          </div>
+          
+          <div id="eventFields" style="display: <%= post && post.type === 'event' ? 'block' : 'none' %>;">
+            <div class="mb-3">
+              <label for="event_date" class="form-label">Event Date</label>
+              <input type="date" class="form-control" id="event_date" name="event_date" 
+                     value="<%= post && post.event_date ? new Date(post.event_date).toISOString().split('T')[0] : '' %>">
+              <small class="form-text text-muted">When the event will take place</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="event_location" class="form-label">Event Location</label>
+              <input type="text" class="form-control" id="event_location" name="event_location" 
+                     value="<%= post ? post.event_location || '' : '' %>"
+                     placeholder="e.g., MorishCart Store, Lagos">
+              <small class="form-text text-muted">Where the event will be held</small>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary  btn-animate-1">
+              <%= post ? 'Update' : 'Create' %> Post
+            </button>
+            <a href="/api/posts" class="btn btn-secondary  btn-animate-1">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+  
+  <script>
+    document.getElementById('type').addEventListener('change', function() {
+      document.getElementById('eventFields').style.display = 
+        this.value === 'event' ? 'block' : 'none';
+    });
+    
+    document.getElementById('title').addEventListener('input', function() {
+      const slug = this.value.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      document.getElementById('slug').value = slug;
+    });
+  </script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/carts.js"></script>
+  <script src="/js/script.js"></script>
+</body>
+</html>

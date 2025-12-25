@@ -68,6 +68,7 @@ export async function addProduct(req, res) {
       rating,
       reviews,
       video_url,
+      is_out_of_stock,
     } = req.body;
 
     if (!name || !category || !price || !req.file) {
@@ -83,8 +84,8 @@ export async function addProduct(req, res) {
     await pool.query(
       `
       INSERT INTO products 
-      (name, category, badge, description, price, old_price, rating, reviews, image, video_url)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (name, category, badge, description, price, old_price, rating, reviews, image, video_url, is_out_of_stock)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         name,
@@ -95,8 +96,9 @@ export async function addProduct(req, res) {
         old_price || null,
         rating || 0,
         reviews || 0,
-        req.file.filename,
+        req.file.optimizedName || req.file.filename,
         video_url || null,
+        is_out_of_stock === "1" ? 1 : 0,
       ],
     );
 
@@ -150,6 +152,7 @@ export async function updateProduct(req, res) {
       rating,
       reviews,
       video_url,
+      is_out_of_stock,
     } = req.body;
 
     if (video_url && !video_url.startsWith("http")) {
@@ -160,7 +163,7 @@ export async function updateProduct(req, res) {
     let query = `
       UPDATE products
       SET name = ?, category = ?, badge = ?, description = ?,
-          price = ?, old_price = ?, rating = ?, reviews = ?, video_url = ?
+          price = ?, old_price = ?, rating = ?, reviews = ?, video_url = ?, is_out_of_stock = ?
     `;
 
     const params = [
@@ -173,11 +176,12 @@ export async function updateProduct(req, res) {
       rating || 0,
       reviews || 0,
       video_url || null,
+      is_out_of_stock === "1" ? 1 : 0,
     ];
 
     if (req.file) {
       query += ", image = ?";
-      params.push(req.file.filename);
+      params.push(req.file.optimizedName || req.file.filename);
     }
 
     query += " WHERE id = ?";
@@ -238,6 +242,38 @@ export async function togglePopular(req, res) {
   } catch (err) {
     console.error("TOGGLE POPULAR ERROR:", err);
     req.flash("error", "Failed to update popular status.");
+    res.redirect("back");
+  }
+}
+
+/* ===============================
+   ADMIN: Toggle Stock Status
+================================ */
+export async function toggleStock(req, res) {
+  try {
+    const [[product]] = await pool.query(
+      "SELECT is_out_of_stock FROM products WHERE id = ?",
+      [req.params.id],
+    );
+
+    const newStatus = product.is_out_of_stock ? 0 : 1;
+
+    await pool.query("UPDATE products SET is_out_of_stock = ? WHERE id = ?", [
+      newStatus,
+      req.params.id,
+    ]);
+
+    req.flash(
+      "success",
+      newStatus
+        ? "Product marked as Out of Stock!"
+        : "Product restocked successfully!",
+    );
+
+    res.redirect("/api/products");
+  } catch (err) {
+    console.error("TOGGLE STOCK ERROR:", err);
+    req.flash("error", "Failed to update stock status.");
     res.redirect("back");
   }
 }

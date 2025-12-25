@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <section class="container editPromoCard py-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h2 class="fw-semibold">Edit Promo Card</h2>
+        <!-- Back Button -->
+        <a href="/" class="btn btn-secondary  btn-animate-1"> ⬅ Back </a>
+      </div>
+
+      <form
+        action="/api/admin/promo/<%= card.id %>/edit"
+        method="POST"
+        enctype="multipart/form-data"
+        class="p-4 border rounded-3 bg-white shadow-sm"
+      >
+        <div class="mb-3">
+          <label class="form-label">Title</label>
+          <input
+            type="text"
+            name="title"
+            class="form-control"
+            value="<%= card.title %>"
+            required
+          />
+          <small class="form-text text-muted"
+            >Use **bold** or *italic* for formatting</small
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Subtitle</label>
+          <input
+            type="text"
+            name="subtitle"
+            class="form-control"
+            value="<%= card.subtitle %>"
+          />
+          <small class="form-text text-muted"
+            >Use **bold** or *italic* for formatting</small
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Small Text</label>
+          <textarea name="small_text" class="form-control" rows="3">
+<%= card.small_text %></textarea
+          >
+          <small class="form-text text-muted"
+            >Use **bold**, *italic*, or line breaks for formatting</small
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Button Link</label>
+          <input
+            type="text"
+            name="button_link"
+            class="form-control"
+            value="<%= card.button_link || '/api/products' %>"
+            placeholder="/api/products?category=example"
+          />
+          <small class="form-text text-muted"
+            >Link where the "Shop Now" button should go</small
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Current Image</label><br />
+          <img src="/uploads/<%= card.image %>" width="120" class="rounded" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Upload New Image</label>
+          <input
+            type="file"
+            name="image"
+            class="form-control"
+            accept="image/*"
+          />
+          <small class="form-text text-muted"
+            >Maximum file size: 2MB. Supported formats: JPG, PNG, WebP</small
+          >
+        </div>
+
+        <button class="btn btn-success btn-animate-1">Update Promo Card</button>
+      </form>
+
+      <!-- Markdown Help -->
+      <div class="mt-4 p-3 bg-light rounded">
+        <h6>Formatting Help:</h6>
+        <div class="row">
+          <div class="col-md-6">
+            <small>
+              <strong>**Bold Text**</strong> → <strong>Bold Text</strong><br />
+              <strong>*Italic Text*</strong> → <em>Italic Text</em><br />
+            </small>
+          </div>
+          <div class="col-md-6">
+            <small>
+              Line breaks work normally<br />
+              Keep it simple for best results
+            </small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

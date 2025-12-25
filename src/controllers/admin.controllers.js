@@ -3,7 +3,7 @@ import { pool } from "../config/db.js";
 
 // Show registration page
 export function showRegisterPage(req, res) {
-  res.render("register");
+  res.render("register", { title: "Admin Registration" });
 }
 
 // Handle admin registration
@@ -69,7 +69,7 @@ export async function registerAdmin(req, res) {
 
 // Show login page
 export function showLoginPage(req, res) {
-  res.render("login");
+  res.render("login", { title: "Admin Login" });
 }
 
 // Handle admin login

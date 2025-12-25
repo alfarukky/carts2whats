@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/errorMsg") %>
+
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-heading">Verify Order</h2>
+        <a href="/api/admin/orders" class="btn btn-secondary btn-animate-1">← Back to Orders</a>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8">
+          <!-- Order Details -->
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Order Details</h5>
+              <% if (order.status === 'pending') { %>
+                <span class="badge bg-warning fs-6">Pending Verification</span>
+              <% } else if (order.status === 'verified') { %>
+                <span class="badge bg-success fs-6">Verified</span>
+              <% } else { %>
+                <span class="badge bg-danger fs-6">Cancelled</span>
+              <% } %>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <strong>Order ID:</strong>
+                  <code class="fs-5"><%= order.order_id %></code>
+                </div>
+                <div class="col-sm-6">
+                  <strong>Total Amount:</strong>
+                  <span class="fs-5 text-success">$<%= order.total_amount %></span>
+                </div>
+              </div>
+              <% if (order.coupon_code) { %>
+              <hr>
+              <div class="row">
+                <div class="col-sm-6">
+                  <strong>Coupon Code:</strong>
+                  <code class="fs-6"><%= order.coupon_code %></code>
+                </div>
+                <div class="col-sm-6">
+                  <strong>Discount:</strong>
+                  <span class="fs-6 text-info">-$<%= order.discount_amount %></span>
+                </div>
+              </div>
+              <% } %>
+              <hr>
+              <div class="row">
+                <div class="col-sm-6">
+                  <strong>Created:</strong>
+                  <%= new Date(order.created_at).toLocaleString() %>
+                </div>
+                <div class="col-sm-6">
+                  <strong>Last Updated:</strong>
+                  <%= new Date(order.updated_at).toLocaleString() %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Information -->
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Customer Information</h5>
+              <% if (order.customer_name || order.customer_phone) { %>
+                <form action="/api/admin/orders/<%= order.order_id %>/clear-customer" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" 
+                          onclick="return confirm('Clear customer information?')">
+                    Clear Info
+                  </button>
+                </form>
+              <% } %>
+            </div>
+            <div class="card-body">
+              <form action="/api/admin/orders/<%= order.order_id %>/update" method="POST">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="customer_name" class="form-label">Customer Name</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="customer_name" 
+                      name="customer_name"
+                      value="<%= order.customer_name || '' %>"
+                      placeholder="Enter customer name from WhatsApp"
+                    >
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="customer_phone" class="form-label">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      class="form-control" 
+                      id="customer_phone" 
+                      name="customer_phone"
+                      value="<%= order.customer_phone || '' %>"
+                      placeholder="e.g., 08123456789"
+                    >
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="notes" class="form-label">Notes</label>
+                  <textarea 
+                    class="form-control" 
+                    id="notes" 
+                    name="notes" 
+                    rows="3"
+                    placeholder="Delivery instructions, special requests, etc."
+                  ><%= order.notes || '' %></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label for="status" class="form-label">Order Status</label>
+                  <select class="form-select" id="status" name="status">
+                    <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>
+                      Pending
+                    </option>
+                    <option value="verified" <%= order.status === 'verified' ? 'selected' : '' %>>
+                      Verified
+                    </option>
+                    <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>
+                      Cancelled
+                    </option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-animate">
+                  <i class="fa fa-save me-2"></i>Update Order
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <!-- Verification Guide -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">Verification Steps</h6>
+            </div>
+            <div class="card-body">
+              <ol class="small">
+                <li>Customer sends WhatsApp with Order ID</li>
+                <li>Compare WhatsApp total with stored amount</li>
+                <li>Add customer name and phone from chat</li>
+                <li>Mark as "Verified" if amounts match</li>
+                <li>Mark as "Cancelled" if suspicious</li>
+              </ol>
+              
+              <div class="alert alert-info small mt-3">
+                <strong>Fraud Check:</strong><br>
+                If WhatsApp amount doesn't match $<%= order.total_amount %>, 
+                investigate before verifying.
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body d-grid gap-2">
+              <% if (order.status === 'pending') { %>
+                <form action="/api/admin/orders/<%= order.order_id %>/update" method="POST">
+                  <input type="hidden" name="status" value="verified">
+                  <button type="submit" class="btn btn-success w-100 btn-animate">
+                    <i class="fa fa-check me-2"></i>Mark Verified
+                  </button>
+                </form>
+              <% } %>
+              
+              <% if (order.status !== 'cancelled') { %>
+                <form action="/api/admin/orders/<%= order.order_id %>/update" method="POST">
+                  <input type="hidden" name="status" value="cancelled">
+                  <button type="submit" class="btn btn-danger w-100 btn-animate" 
+                          onclick="return confirm('Cancel this order?')">
+                    <i class="fa fa-times me-2"></i>Cancel Order
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

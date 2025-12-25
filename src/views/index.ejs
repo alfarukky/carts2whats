@@ -3,149 +3,22 @@
   <%- include("partials/head") %>
   <body>
     <%- include("partials/errorMsg") %>
-    <nav
-      class="navbar navbar-expand-md border-top d-none d-md-block shadow-sm py-0 pb-3"
-    >
-      <div
-        class="bg-light py-1 mb-1 border-bottom shadow-sm"
-        data-aos="fade-down"
-      >
-        <div
-          class="container m-auto d-flex justify-content-between align-items-center"
-        >
-          <div class="overflow-hidden flex-grow-1 me-3">
-            <span class="deal-marquee">
-              Super Value Deals - Save more with coupons
-            </span>
-          </div>
 
-          <button class="btn btn-sm btn-secondary btn-animate">
-            Quick Actions
-          </button>
+    <!-- Top Banner -->
+    <div class="bg-light py-1 border-bottom shadow-sm" data-aos="fade-down">
+      <div class="container d-flex justify-content-between align-items-center">
+        <div class="overflow-hidden flex-grow-1 me-3">
+          <span class="deal-marquee">
+            Super Value Deals - Save more with coupons
+          </span>
         </div>
-      </div>
-
-      <div
-        class="container py-3 d-flex align-items-center justify-content-between"
-        data-aos="fade-down"
-      >
-        <!-- Logo -->
-        <div class="d-flex align-items-center">
-          <img src="" alt="logo" class="me-2" />
-          <h4 class="m-0 fw-bold text-success">MorishCart</h4>
-        </div>
-
-        <!-- Search -->
-        <div class="flex-grow-1 mx-4 d-none d-md-block">
-          <form class="d-flex" role="search">
-            <input
-              class="form-control"
-              type="search"
-              placeholder="Type to search..."
-              aria-label="Search"
-            />
-            <button class="btn btn-outline-success btn-animate" type="submit">
-              Search
-            </button>
-          </form>
-        </div>
-
-        <div class="d-flex align-items-center gap-4">
-          <!-- Heart -->
-          <div class="position-relative">
-            <span
-              class="rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
-            >
-              <i class="fa-solid fa-heart text-success"></i>
-            </span>
-            <span
-              class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
-              >5</span
-            >
-          </div>
-
-          <!-- User -->
-          <!-- User / Auth -->
-          <div class="position-relative d-flex align-items-center gap-2">
-            <% if (admin) { %>
-            <!-- Logged in -->
-            <span class="fw-semibold text-success">
-              Hi, <%= admin.firstName %>
-            </span>
-
-            <form action="/api/auth/logout" method="POST">
-              <button type="submit" class="btn btn-outline-danger btn-sm">
-                Logout
-              </button>
-            </form>
-
-            <% } else { %>
-            <!-- Not logged in -->
-            <a
-              href="/api/auth/login"
-              class="rounded-circle border border-success d-flex align-items-center justify-content-center p-2 bg-white text-decoration-none"
-            >
-              <i class="fa-solid fa-user text-success"></i>
-            </a>
-            <% } %>
-          </div>
-
-          <!-- Cart -->
-          <div class="position-relative">
-            <span
-              class="rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
-            >
-              <i class="fa-solid fa-cart-shopping text-success"></i>
-            </span>
-            <span
-              class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
-              >1</span
-            >
-          </div>
-        </div>
-      </div>
-
-      <div class="container">
-        <button
-          class="navbar-toggler"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-        >
-          <span class="navbar-toggler-icon"></span>
+        <button class="btn btn-sm btn-secondary btn-animate">
+          Quick Actions
         </button>
-
-        <div class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav align-items-center">
-            <li class="nav-item bg-primary text-white rounded-3 me-3 px-2 py-1">
-              <a class="nav-link" href="#"
-                ><i class="bi bi-grid"></i> All Categories</a
-              >
-            </li>
-
-            <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                data-bs-toggle="dropdown"
-              >
-                Products
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Groceries</a></li>
-                <li><a class="dropdown-item" href="#">Household</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="./contact.html">Contact</a>
-            </li>
-          </ul>
-        </div>
       </div>
-    </nav>
+    </div>
+    <!-- Main Navbar -->
+    <%- include('partials/navbar') %>
     <header>
       <!-- Hero Slider -->
       <div class="hero hero--static py-6">
@@ -222,7 +95,11 @@
                 />
               </div>
 
-              <a class="btn btn-dark mt-3">Shop Now</a>
+              <a
+                href="<%= card.button_link || '/api/products' %>"
+                class="btn btn-dark mt-3"
+                >Shop Now</a
+              >
             </div>
 
             <% if (admin) { %>
@@ -545,7 +422,9 @@
                     Keep your home spotless with premium-quality cleaning and
                     disinfectant products from trusted brands.
                   </p>
-                  <a href="#shop-cleaning" class="card_btn">Shop Now</a>
+                  <a href="/api/products?category=Groceries" class="card_btn"
+                    >Shop Now</a
+                  >
                 </div>
               </div>
             </div>
@@ -589,7 +468,9 @@
                     Enjoy cleaner, fresher clothes with laundry care items that
                     make washing effortless and effective.
                   </p>
-                  <a href="#shop-laundry" class="card_btn">Explore Products</a>
+                  <a href="/api/products?category=fresh" class="card_btn"
+                    >Explore Products</a
+                  >
                 </div>
               </div>
             </div>
@@ -632,7 +513,11 @@
                     Keep your kitchen and appliances spotless with our durable,
                     effective, and affordable cleaning solutions.
                   </p>
-                  <a href="#shop-kitchen" class="card_btn">View Collection</a>
+                  <a
+                    href="/api/products?category=Personal Care"
+                    class="card_btn"
+                    >View Collection</a
+                  >
                 </div>
               </div>
             </div>
@@ -682,12 +567,20 @@
                   "" %>
                 </span>
 
+                <!-- Out of Stock Badge -->
+                <% if (product.is_out_of_stock) { %>
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                  OUT OF STOCK
+                </span>
+                <% } %>
+
                 <!-- Product Image -->
                 <div class="product-img text-center">
                   <img
                     src="/uploads/<%= product.image %>"
                     alt="<%= product.name %>"
                     class="img-fluid"
+                    loading="lazy"
                   />
                 </div>
 
@@ -721,9 +614,26 @@
                   <% } %>
                 </p>
 
-                <a class="btn btn-outline-success btn-sm w-100">
-                  <i class="fa fa-shopping-cart me-2"></i> Quick Add
-                </a>
+                <% if (product.is_out_of_stock) { %>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm w-100"
+                  disabled
+                >
+                  <i class="fa fa-ban me-2"></i> Out of Stock
+                </button>
+                <% } else { %>
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm w-100 add-to-cart-btn"
+                  data-id="<%= product.id %>"
+                  data-name="<%= product.name %>"
+                  data-price="<%= product.price %>"
+                  data-image="/uploads/<%= product.image %>"
+                >
+                  <i class="fa fa-shopping-cart me-2"></i> Add to Cart
+                </button>
+                <% } %>
               </div>
 
               <!-- Admin Controls -->
@@ -818,6 +728,7 @@
       <i class="fa-solid fa-arrow-up"></i>
     </button>
     <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/carts.js"></script>
     <script src="/js/script.js"></script>
     <script src="/js/aos.js"></script>
     <script>

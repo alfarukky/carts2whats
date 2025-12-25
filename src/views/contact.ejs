@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/errorMsg") %>
+    <%- include("partials/navbar") %>
+    <section class="contact-section py-5 bg-light">
+      <div class="container">
+        <div class="row align-items-center gy-4">
+          <!-- Left Side: Info -->
+          <div class="col-md-5" data-aos="fade-right" data-aos-duration="700">
+            <h5 class="text-secondary fw-semibold">
+              Need help or have a question?
+            </h5>
+            <h2 class="fw-bold text-dark mb-3 text-heading">
+              Don't Hesitate to <br />Contact
+              <span class="text-success">MorishCart</span>
+            </h2>
+            <p class="text-muted mb-4">
+              Our support team is always ready to assist you with your orders,
+              returns, or general inquiries. We typically respond within 24
+              hours.
+            </p>
+
+            <ul class="list-unstyled text-muted">
+              <li class="mb-2">
+                <i class="fa-solid fa-envelope text-success me-2"></i>
+                info@morishcart.com
+              </li>
+              <li>
+                <i class="fa-solid fa-phone text-success me-2"></i> +234 809 456
+                1234
+              </li>
+            </ul>
+          </div>
+
+          <!-- Right Side: Form -->
+          <div class="col-md-7" data-aos="fade-left" data-aos-duration="700">
+            <div id="flashMessage" class="flashMessage"></div>
+            <form
+              id="contactForm"
+              action="/contact"
+              method="POST"
+              class="p-4 bg-white shadow-sm rounded-4"
+            >
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="name" class="form-label fw-semibold"
+                    >Full Name</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                  />
+                  <small id="nameError" class="error text-danger"></small>
+                </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label fw-semibold"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                  />
+                  <small id="emailError" class="error text-danger"></small>
+                </div>
+                <div class="col-md-6">
+                  <label for="phone" class="form-label fw-semibold"
+                    >Phone (Optional)</label
+                  >
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    name="phone"
+                    placeholder="08123456789"
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="subject" class="form-label fw-semibold"
+                    >Subject</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="subject"
+                    name="subject"
+                    placeholder="e.g., Order issue, Product inquiry"
+                  />
+                  <small id="subjectError" class="error text-danger"></small>
+                </div>
+                <div class="col-12">
+                  <label for="message" class="form-label fw-semibold"
+                    >Message</label
+                  >
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows="5"
+                    class="form-control"
+                    placeholder="Write your message here..."
+                  ></textarea>
+                  <small id="messageError" class="error text-danger"></small>
+                </div>
+                <div class="col-12 text-end">
+                  <button
+                    type="submit"
+                    id="submitBtn"
+                    class="btn btn-success btn-lg btn-animate mt-3 px-5"
+                  >
+                    <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <%-include("partials/footer")  %>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="/js/carts.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 700,
+        easing: "ease-out-cubic",
+        once: true,
+        offset: 100,
+      });
+    </script>
+
+    <script>
+      // Add loading state to contact form
+      document.querySelector("form").addEventListener("submit", function () {
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin me-2"></i>Sending...';
+        submitBtn.disabled = true;
+      });
+    </script>
+  </body>
+</html>

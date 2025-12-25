@@ -1,7 +1,9 @@
 import http from "http";
 import app from "./app.js";
 import { pool } from "./config/db.js";
-import { createSuperAdmin } from "./config/createSuperAdmin.js"; // Fixed import path
+import { createSuperAdmin } from "./config/createSuperAdmin.js";
+import { createOrderVerificationTable } from "./config/orderVerification.js";
+import { createCouponsTable } from "./config/coupons.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,6 +16,12 @@ async function startServer() {
 
     // 2. Initialize Super Admin using the obtained connection
     await createSuperAdmin(conn);
+
+    // 3. Create order verification table
+    await createOrderVerificationTable();
+
+    // 4. Create coupons table
+    await createCouponsTable();
 
     // 3. Create and start the server
     const server = http.createServer(app);

@@ -1,44 +1,120 @@
-<nav
-  class="navbar navbar-expand-md border-top mb-5 d-none d-md-block shadow-sm"
->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
   <div class="container">
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold text-success" href="/">
+      <img src="" alt="logo" class="me-2" style="display: none" />
+      MorishCart
+    </a>
+
+    <!-- Mobile Toggle -->
     <button
-      class="navbar-toggler"
+      class="navbar-toggler border-0"
+      type="button"
       data-bs-toggle="collapse"
-      data-bs-target="#mainNav"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="mainNav">
-      <ul class="navbar-nav align-items-center">
-        <li class="nav-item bg-primary text-white rounded-3 me-3 px-2 py-1">
-          <a class="nav-link" href="#"
-            ><i class="bi bi-grid"></i> All Categories</a
-          >
-        </li>
-
-        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            data-bs-toggle="dropdown"
-          >
-            Products
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Groceries</a></li>
-            <li><a class="dropdown-item" href="#">Household</a></li>
-          </ul>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+    <!-- Navigation Content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Navigation Links -->
+      <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" href="./contact.html">Contact</a>
+          <a
+            class="nav-link text-dark btn btn-primary rounded-3 me-3 px-3 py-2"
+            href="/api/products"
+          >
+            <i class="bi bi-grid"></i> All Categories
+          </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/products">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/api/posts">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
+        </li>
+        <% if (admin) { %>
+        <li class="nav-item">
+          <a class="nav-link text-primary fw-semibold" href="/api/admin/orders">
+            <i class="fa fa-clipboard-list me-1"></i>Orders
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-success fw-semibold" href="/api/admin/coupons">
+            <i class="fa fa-tags me-1"></i>Coupons
+          </a>
+        </li>
+        <% } %>
       </ul>
+
+      <!-- User Actions -->
+      <div class="d-flex align-items-center user-actions">
+        <!-- Wishlist -->
+        <div class="position-relative me-3">
+          <span
+            class="action-icon rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
+          >
+            <i class="fa-solid fa-heart text-success"></i>
+          </span>
+        </div>
+
+        <!-- User Auth -->
+        <div class="position-relative d-flex align-items-center me-3">
+          <% if (admin) { %>
+          <div class="d-flex align-items-center gap-2">
+            <span class="fw-semibold text-success d-none d-md-inline">
+              Hi, <%= admin.firstName %>
+            </span>
+            <form action="/api/auth/logout" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                Logout
+              </button>
+            </form>
+          </div>
+          <% } else { %>
+          <a
+            href="/api/auth/login"
+            class="action-icon rounded-circle border border-success d-flex align-items-center justify-content-center p-2 bg-white text-decoration-none"
+          >
+            <i class="fa-solid fa-user text-success"></i>
+          </a>
+          <% } %>
+        </div>
+
+        <!-- Cart -->
+        <div
+          class="position-relative"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#cartOffcanvas"
+          style="cursor: pointer"
+        >
+          <span
+            class="action-icon rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
+          >
+            <i class="fa-solid fa-cart-shopping text-success"></i>
+          </span>
+          <span
+            id="cartCount"
+            class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
+            style="display: none"
+          >
+            0
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
