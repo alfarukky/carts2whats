@@ -22,7 +22,7 @@
 
               <!-- Coupon Section -->
               <div class="border-top pt-3 mt-3">
-                <h6>Have a coupon code?</h6>
+                <div class="fw-bold">Have a coupon code?</div>
                 <div class="input-group mb-3">
                   <input
                     type="text"
@@ -97,13 +97,13 @@
         const orderSummary = document.getElementById("orderSummary");
 
         orderSummary.innerHTML = `
-          <h6>Order Details:</h6>
+          <div class="fw-bold">Order Details:</div>
           ${cart
             .map(
               (item) => `
             <div class="d-flex justify-content-between mb-2">
               <span>${item.name} × ${item.quantity}</span>
-              <span>$${(item.price * item.quantity).toFixed(2)}</span>
+              <span>₦${(item.price * item.quantity).toFixed(2)}</span>
             </div>
           `,
             )
@@ -170,13 +170,13 @@
           const finalTotal = originalTotal - appliedCoupon.discount;
 
           document.getElementById("subtotalAmount").textContent =
-            `$${originalTotal.toFixed(2)}`;
+            `₦${originalTotal.toFixed(2)}`;
           document.getElementById("couponCodeDisplay").textContent =
             appliedCoupon.code;
           document.getElementById("discountAmount").textContent =
-            `-$${appliedCoupon.discount.toFixed(2)}`;
+            `-₦${appliedCoupon.discount.toFixed(2)}`;
           document.getElementById("finalTotal").textContent =
-            `$${finalTotal.toFixed(2)}`;
+            `₦${finalTotal.toFixed(2)}`;
 
           discountSummary.classList.remove("d-none");
         } else {
@@ -191,17 +191,17 @@
 
         cart.forEach((item, i) => {
           const itemTotal = item.price * item.quantity;
-          text += `${i + 1}. ${item.name} × ${item.quantity} - $${itemTotal.toFixed(2)}\n`;
+          text += `${i + 1}. ${item.name} × ${item.quantity} - ₦${itemTotal.toFixed(2)}\n`;
         });
 
-        text += `\nSubtotal: $${total.toFixed(2)}\n`;
+        text += `\nSubtotal: ₦${total.toFixed(2)}\n`;
 
         if (appliedCoupon) {
-          text += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
+          text += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
           total = total - appliedCoupon.discount;
         }
 
-        text += `💰 Total: $${total.toFixed(2)}\n📍 Delivery needed? Yes/No\n💳 Payment: Cash/Transfer\n\nPlease confirm this order 👍`;
+        text += `💰 Total: ₦${total.toFixed(2)}\n📍 Delivery needed? Yes/No\n💳 Payment: Cash/Transfer\n\nPlease confirm this order 👍`;
         return text;
       }
 
@@ -269,19 +269,19 @@
               const itemTotal = item.price * item.quantity;
               // Use escapeHtml for safety, but for WhatsApp we need plain text
               const safeName = item.name.replace(/[<>&"']/g, '');
-              message += `${index + 1}. ${safeName} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
+              message += `${index + 1}. ${safeName} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
             });
 
             message += `\n----------------------\n`;
-            message += `Subtotal: $${originalTotal.toFixed(2)}\n`;
+            message += `Subtotal: ₦${originalTotal.toFixed(2)}\n`;
 
-            message += `Subtotal: $${originalTotal.toFixed(2)}\n`;
+            message += `Subtotal: ₦${originalTotal.toFixed(2)}\n`;
 
             if (appliedCoupon) {
-              message += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
-              message += `*TOTAL: $${finalTotal.toFixed(2)}*\n`;
+              message += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
+              message += `*TOTAL: ₦${finalTotal.toFixed(2)}*\n`;
             } else {
-              message += `*TOTAL: $${originalTotal.toFixed(2)}*\n`;
+              message += `*TOTAL: ₦${originalTotal.toFixed(2)}*\n`;
             }
 
             message += `📋 Ref: ${orderData.verificationCode}\n`;

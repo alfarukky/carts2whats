@@ -13,9 +13,12 @@ let appliedCoupon = null;
    SECURITY HELPERS
 ================================ */
 function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 /* ===============================
@@ -45,6 +48,26 @@ function getCart() {
   }
 
   return validItems;
+}
+
+// Show toast notification (reuses existing alert styling)
+function showToast(message, type = "danger") {
+  const toast = document.createElement("div");
+  toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+  toast.style.cssText = "top: 20px; right: 20px; z-index: 9999; max-width: 300px;";
+  toast.innerHTML = `
+    <small>${message}</small>
+    <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
+  `;
+  document.body.appendChild(toast);
+  
+  // Auto-remove after 4 seconds
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 500);
+    }
+  }, 4000);
 }
 
 function showCartExpiryMessage() {
@@ -177,14 +200,14 @@ function renderCart() {
     itemsEl.innerHTML = `
       <div class="text-center py-5">
         <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
-        <h6>Your cart is empty</h6>
+        <div class="fw-bold">Your cart is empty</div>
         <p class="text-muted small">Add some products to get started</p>
         <button class="btn btn-outline-success" data-bs-dismiss="offcanvas">
           Continue Shopping
         </button>
       </div>
     `;
-    totalEl.textContent = "$0.00";
+    totalEl.textContent = "₦0.00";
     return;
   }
 
@@ -193,7 +216,7 @@ function renderCart() {
   itemsEl.innerHTML = `
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div class="d-flex align-items-center">
-        <h6 class="mb-0">Cart Items</h6>
+        <div class="fw-bold mb-0">Cart Items</div>
         <span class="badge bg-success ms-2">${cartCount} items</span>
       </div>
       <button onclick="clearCart()" class="btn btn-sm btn-outline-danger">
@@ -207,8 +230,8 @@ function renderCart() {
         <div class="d-flex align-items-center mb-2">
           <img src="${item.image}" class="cart-item-image rounded me-3" />
           <div class="flex-grow-1">
-            <h6 class="mb-1 text-truncate cart-item-name">${escapeHtml(item.name)}</h6>
-            <small class="text-muted">$${item.price} each</small>
+            <div class="fw-bold mb-1 text-truncate cart-item-name">${escapeHtml(item.name)}</div>
+            <small class="text-muted">₦${item.price} each</small>
             <div><small class="text-muted">${getItemAge(item.addedAt)}</small></div>
           </div>
           <button onclick="removeFromCart('${item.id}')" 
@@ -222,7 +245,7 @@ function renderCart() {
             <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})" 
                     class="btn btn-outline-secondary cart-qty-btn">+</button>
           </div>
-          <strong class="text-success cart-item-total">$${(item.price * item.quantity).toFixed(2)}</strong>
+          <strong class="text-success cart-item-total">₦${(item.price * item.quantity).toFixed(2)}</strong>
         </div>
       </div>
     `,
@@ -230,7 +253,7 @@ function renderCart() {
       .join("")}
   `;
 
-  totalEl.textContent = `$${getCartTotal().toFixed(2)}`;
+  totalEl.textContent = `₦${getCartTotal().toFixed(2)}`;
 }
 
 /* ===============================
@@ -240,7 +263,7 @@ async function buildWhatsAppMessage() {
   const cart = getCart();
 
   if (!cart || cart.length === 0) {
-    alert("Your cart is empty");
+    showToast("Your cart is empty");
     return null;
   }
 
@@ -283,17 +306,17 @@ async function buildWhatsAppMessage() {
 
     cart.forEach((item, index) => {
       const itemTotal = item.price * item.quantity;
-      message += `${index + 1}. ${escapeHtml(item.name)} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
+      message += `${index + 1}. ${escapeHtml(item.name)} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
     });
 
     message += `\n----------------------\n`;
-    message += `Subtotal: $${total.toFixed(2)}\n`;
+    message += `Subtotal: ₦${total.toFixed(2)}\n`;
 
     if (appliedCoupon) {
-      message += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
-      message += `*TOTAL: $${finalTotal.toFixed(2)}*\n`;
+      message += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
+      message += `*TOTAL: ₦${finalTotal.toFixed(2)}*\n`;
     } else {
-      message += `*TOTAL: $${total.toFixed(2)}*\n`;
+      message += `*TOTAL: ₦${total.toFixed(2)}*\n`;
     }
     message += `Ref: ${orderData.verificationCode}\n`;
     message += `----------------------\n\n`;
@@ -304,7 +327,7 @@ async function buildWhatsAppMessage() {
     return encodeURIComponent(message);
   } catch (error) {
     console.error("Detailed error:", error);
-    alert("Error creating order. Please try again.");
+    showToast("Error creating order. Please try again.");
     return null;
   }
 }
@@ -312,7 +335,7 @@ async function buildWhatsAppMessage() {
 document.getElementById("buyNowBtn")?.addEventListener("click", async () => {
   const cart = getCart();
   if (cart.length === 0) {
-    alert("Your cart is empty");
+    showToast("Your cart is empty");
     return;
   }
 

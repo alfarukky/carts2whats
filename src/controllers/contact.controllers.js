@@ -3,8 +3,7 @@ import { sendContactEmails } from '../utils/email.utils.js';
 export async function showContactPage(req, res) {
   try {
     res.render("contact", {
-      title: "Contact Us",
-      admin: req.session.admin || null
+      title: "Contact Us"
     });
   } catch (err) {
     console.error("CONTACT PAGE ERROR:", err);

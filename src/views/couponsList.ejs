@@ -50,11 +50,11 @@
                   <% if (coupon.type === 'percentage') { %>
                   <%= coupon.value %>%
                   <% } else { %>
-                  $<%= coupon.value %>
+                  ₦<%= coupon.value %>
                   <% } %>
                 </strong>
               </td>
-              <td>$<%= coupon.min_order_amount || 0 %></td>
+              <td>₦<%= coupon.min_order_amount || 0 %></td>
               <td>
                 <small>
                   <% if (coupon.expires_at) { %>

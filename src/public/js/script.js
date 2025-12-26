@@ -42,13 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modalProductDescription").textContent =
       button.dataset.description || "";
     document.getElementById("modalProductPrice").textContent =
-      `$${button.dataset.price}`;
+      `₦${button.dataset.price}`;
     document.getElementById("modalProductImage").src = button.dataset.image;
 
     // Old price
     const oldPriceEl = document.getElementById("modalProductOldPrice");
     if (button.dataset.oldprice) {
-      oldPriceEl.textContent = `$${button.dataset.oldprice}`;
+      oldPriceEl.textContent = `₦${button.dataset.oldprice}`;
       oldPriceEl.classList.remove("d-none");
     } else {
       oldPriceEl.classList.add("d-none");

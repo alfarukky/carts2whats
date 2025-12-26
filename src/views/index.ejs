@@ -580,6 +580,8 @@
                     src="/uploads/<%= product.image %>"
                     alt="<%= product.name %>"
                     class="img-fluid"
+                    width="200"
+                    height="200"
                     loading="lazy"
                   />
                 </div>
@@ -590,7 +592,7 @@
                 </p>
 
                 <!-- Name -->
-                <h6 class="fw-bold"><%= product.name %></h6>
+                <div class="fw-bold"><%= product.name %></div>
 
                 <!-- Rating -->
                 <div class="rating text-warning mb-1">
@@ -606,10 +608,10 @@
 
                 <!-- Price -->
                 <p class="mb-1 d-flex justify-content-between">
-                  <span class="fw-bold text-dark">$<%= product.price %></span>
+                  <span class="fw-bold text-dark">₦<%= product.price %></span>
                   <% if (product.old_price) { %>
                   <span class="text-muted text-decoration-line-through small">
-                    $<%= product.old_price %>
+                    ₦<%= product.old_price %>
                   </span>
                   <% } %>
                 </p>

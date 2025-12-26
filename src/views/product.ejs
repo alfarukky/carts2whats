@@ -100,6 +100,8 @@
                 src="/uploads/<%= product.image %>"
                 alt="<%= product.name %>"
                 class="img-fluid"
+                width="200"
+                height="200"
                 loading="lazy"
                 data-full="/uploads/<%= product.image %>"
               />
@@ -109,7 +111,7 @@
             <p class="text-muted small mt-3 mb-1"><%= product.category %></p>
 
             <!-- Product Name -->
-            <h6 class="fw-bold"><%= product.name %></h6>
+            <div class="fw-bold"><%= product.name %></div>
 
             <!-- Rating -->
             <div class="rating text-warning mb-1">
@@ -125,11 +127,11 @@
 
             <!-- Prices -->
             <p class="mb-1 d-flex justify-content-between">
-              <span class="fw-bold text-dark">$<%= product.price %></span>
+              <span class="fw-bold text-dark">₦<%= product.price %></span>
 
               <% if (product.old_price) { %>
               <span class="text-muted text-decoration-line-through small">
-                $<%= product.old_price %>
+                ₦<%= product.old_price %>
               </span>
               <% } %>
             </p>
@@ -281,6 +283,31 @@
     </div>
 
     <%-include("partials/footer")  %>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "ItemList",
+      "itemListElement": [
+        <% products.forEach((product, index) => { %>
+        {
+          "@type": "Product",
+          "position": <%= index + 1 %>,
+          "name": "<%= product.name %>",
+          "image": "/uploads/<%= product.image %>",
+          "offers": {
+            "@type": "Offer",
+            "price": "<%= product.price %>",
+            "priceCurrency": "NGN",
+            "availability": "<%= product.is_out_of_stock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock' %>"
+          }
+        }<%= index < products.length - 1 ? ',' : '' %>
+        <% }) %>
+      ]
+    }
+    </script>
+    
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/carts.js"></script>
     <script src="/js/script.js"></script>
