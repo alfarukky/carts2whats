@@ -3,7 +3,11 @@ import "dotenv/config";
 
 // CREATE A SINGLE POOL — reused across the whole app
 export const pool = mysql.createPool({
-  uri: process.env.MYSQL_URL,
+  host: process.env.DB_HOST || "127.0.0.1",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASS || "",
+  database: process.env.DB_NAME || "carts2whats",
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,   // queue when all connections are busy
   connectionLimit: 10,        // max 10 connections
   queueLimit: 0               // unlimited queued requests

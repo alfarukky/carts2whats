@@ -38,6 +38,7 @@ const sessionStore = new MySQLStore({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  createDatabaseTable: true,
 });
 
 app.use(
@@ -65,12 +66,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  req.flash("error", "Internal Server Error");
-  res.redirect("back");
-});
-
 app.use("/", homeRoute);
 app.use("/api/checkout", checkoutRoute);
 
@@ -82,9 +77,18 @@ app.use("/contact", contactRoute);
 app.use("/api/admin/orders", orderVerificationRoute);
 app.use("/api/admin/coupons", couponRoute);
 
-//catch all routes
-// app.get('/*', (req, res) => {
-//   res.status(404).json({ message: 'Route not found' });
-// });
+// 404 handler - catch all undefined routes
+app.use((req, res) => {
+  req.flash("error", "Page not found");
+  res.redirect('/');
+});
+
+
+// Error handler - moved to end after all routes
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  req.flash("error", "Internal Server Error");
+  res.redirect("back");
+});
 
 export default app;

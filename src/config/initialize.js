@@ -113,6 +113,18 @@ async function createAllTables() {
     )
   `);
 
+  // Promo cards table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS promo_cards (
+      id INT PRIMARY KEY,
+      title VARCHAR(255),
+      subtitle VARCHAR(255),
+      small_text VARCHAR(255),
+      image VARCHAR(255),
+      button_link VARCHAR(255)
+    )
+  `);
+
   console.log('✅ All tables created/verified');
 }
 
@@ -141,5 +153,4 @@ async function createSuperAdmin() {
   );
 
   console.log("✓ Super admin created:", email);
-  console.log("✓ Password:", password);
 }
