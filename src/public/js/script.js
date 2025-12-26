@@ -181,6 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //change coupon code to upperCase
-document.getElementById("code").addEventListener("input", function () {
-  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-});
+const codeInput = document.getElementById("code");
+if (codeInput) {
+  codeInput.addEventListener("input", function () {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  });
+}

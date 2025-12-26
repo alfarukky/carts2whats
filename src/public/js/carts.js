@@ -6,13 +6,17 @@ const WHATSAPP_NUMBER = "2348174352137";
 const INSTAGRAM_USERNAME = "go3we_tech";
 const CART_EXPIRY_HOURS = 48; // 2 days
 
+// Global coupon variable (used in checkout.ejs)
+let appliedCoupon = null;
+
 /* ===============================
-   IMAGE OPTIMIZATION
+   SECURITY HELPERS
 ================================ */
-// Load full image on click for better mobile experience (removed thumbnail logic)
-document.addEventListener("click", function (e) {
-  // Removed progressive loading since we're not using thumbnails
-});
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
 
 /* ===============================
    STORAGE HELPERS
@@ -45,16 +49,18 @@ function getCart() {
 
 function showCartExpiryMessage() {
   // Create and show a temporary notification
-  const notification = document.createElement('div');
-  notification.className = 'alert alert-info alert-dismissible fade show position-fixed';
-  notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
+  const notification = document.createElement("div");
+  notification.className =
+    "alert alert-info alert-dismissible fade show position-fixed";
+  notification.style.cssText =
+    "top: 20px; right: 20px; z-index: 9999; max-width: 300px;";
   notification.innerHTML = `
     <small>Some items in your cart expired and were removed to ensure current pricing.</small>
     <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"></button>
   `;
-  
+
   document.body.appendChild(notification);
-  
+
   // Auto-remove after 5 seconds
   setTimeout(() => {
     if (notification.parentNode) {
@@ -68,15 +74,15 @@ function saveCart(cart) {
 }
 
 function getItemAge(addedAt) {
-  if (!addedAt) return '';
-  
+  if (!addedAt) return "";
+
   const now = Date.now();
   const hoursDiff = Math.floor((now - addedAt) / (1000 * 60 * 60));
-  
-  if (hoursDiff < 1) return 'Added just now';
-  if (hoursDiff < 24) return 'Added today';
-  if (hoursDiff < 48) return 'Added yesterday';
-  return 'Added recently';
+
+  if (hoursDiff < 1) return "Added just now";
+  if (hoursDiff < 24) return "Added today";
+  if (hoursDiff < 48) return "Added yesterday";
+  return "Added recently";
 }
 
 /* ===============================
@@ -201,7 +207,7 @@ function renderCart() {
         <div class="d-flex align-items-center mb-2">
           <img src="${item.image}" class="cart-item-image rounded me-3" />
           <div class="flex-grow-1">
-            <h6 class="mb-1 text-truncate cart-item-name">${item.name}</h6>
+            <h6 class="mb-1 text-truncate cart-item-name">${escapeHtml(item.name)}</h6>
             <small class="text-muted">$${item.price} each</small>
             <div><small class="text-muted">${getItemAge(item.addedAt)}</small></div>
           </div>
@@ -230,29 +236,6 @@ function renderCart() {
 /* ===============================
    WHATSAPP CHECKOUT
 ================================ */
-async function createOrderVerification(totalAmount) {
-  try {
-    const response = await fetch("/api/checkout/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ totalAmount }),
-    });
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || "Failed to create order");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error creating order verification:", error);
-    throw error;
-  }
-}
-
 async function buildWhatsAppMessage() {
   const cart = getCart();
 
@@ -261,34 +244,34 @@ async function buildWhatsAppMessage() {
     return null;
   }
 
-  const total = getCartTotal();
-
   try {
     // Create order verification record with final total and coupon data
+    const total = getCartTotal();
     const finalTotal = appliedCoupon ? total - appliedCoupon.discount : total;
-    
+
     const orderPayload = {
-      totalAmount: finalTotal
+      totalAmount: finalTotal,
     };
-    
+
     // Add coupon data if applied
     if (appliedCoupon) {
       orderPayload.couponCode = appliedCoupon.code;
       orderPayload.discountAmount = appliedCoupon.discount;
     }
-    
-    const response = await fetch('/api/checkout/create', {
-      method: 'POST',
+
+    const response = await fetch("/api/checkout/create", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(orderPayload)
+      body: JSON.stringify(orderPayload),
     });
-    
+
     const orderData = await response.json();
-    
+
     if (!orderData.success) {
-      throw new Error(orderData.error || 'Failed to create order');
+      console.error("Server error:", orderData.error);
+      throw new Error(orderData.error || "Failed to create order");
     }
 
     const date = new Date().toLocaleDateString();
@@ -300,20 +283,19 @@ async function buildWhatsAppMessage() {
 
     cart.forEach((item, index) => {
       const itemTotal = item.price * item.quantity;
-      message += `${index + 1}. ${item.name} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
+      message += `${index + 1}. ${escapeHtml(item.name)} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
     });
 
     message += `\n----------------------\n`;
     message += `Subtotal: $${total.toFixed(2)}\n`;
-    
+
     if (appliedCoupon) {
       message += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
       message += `*TOTAL: $${finalTotal.toFixed(2)}*\n`;
     } else {
       message += `*TOTAL: $${total.toFixed(2)}*\n`;
     }
-    
-    message += `🔐 Code: ${orderData.verificationCode}\n`;
+    message += `Ref: ${orderData.verificationCode}\n`;
     message += `----------------------\n\n`;
     message += `Delivery Required: Yes / No\n`;
     message += `Payment Method: Cash / Transfer\n\n`;
@@ -321,6 +303,7 @@ async function buildWhatsAppMessage() {
 
     return encodeURIComponent(message);
   } catch (error) {
+    console.error("Detailed error:", error);
     alert("Error creating order. Please try again.");
     return null;
   }

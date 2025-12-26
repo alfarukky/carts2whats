@@ -88,113 +88,10 @@
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/carts.js"></script>
     <script>
-      let appliedCoupon = null;
+      // appliedCoupon is already declared in carts.js
       let originalTotal = 0;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const cart = getCart();
-        const orderSummary = document.getElementById("orderSummary");
-
-        if (cart.length === 0) {
-          window.location.href = "/";
-          return;
-        }
-
-        // Calculate and store original total
-        originalTotal = getCartTotal();
-
-        // Render order summary
-        renderOrderSummary();
-
-        // WhatsApp button
-        document.getElementById("whatsappBtn").onclick = async () => {
-          try {
-            const finalTotal = appliedCoupon
-              ? originalTotal - appliedCoupon.discount
-              : originalTotal;
-
-            const orderPayload = {
-              totalAmount: finalTotal,
-            };
-
-            // Add coupon data if applied
-            if (appliedCoupon) {
-              orderPayload.couponCode = appliedCoupon.code;
-              orderPayload.discountAmount = appliedCoupon.discount;
-            }
-
-            const response = await fetch("/api/checkout/create", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(orderPayload),
-            });
-
-            const orderData = await response.json();
-
-            if (!orderData.success) {
-              alert("Error creating order. Please try again.");
-              return;
-            }
-
-            // Build WhatsApp message
-            const cart = getCart();
-            const date = new Date().toLocaleDateString();
-
-            let message = `🛒 MorishCart Order\n`;
-            message += `Order ID: ${orderData.orderId}\n`;
-            message += `Date: ${date}\n\n`;
-            message += `*ITEMS:*\n`;
-
-            cart.forEach((item, index) => {
-              const itemTotal = item.price * item.quantity;
-              message += `${index + 1}. ${item.name} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
-            });
-
-            message += `\n----------------------\n`;
-            message += `Subtotal: $${originalTotal.toFixed(2)}\n`;
-
-            if (appliedCoupon) {
-              message += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
-              message += `*TOTAL: $${finalTotal.toFixed(2)}*\n`;
-            } else {
-              message += `*TOTAL: $${originalTotal.toFixed(2)}*\n`;
-            }
-
-            message += `🔐 Code: ${orderData.verificationCode}\n`;
-            message += `----------------------\n\n`;
-            message += `Delivery Required: Yes / No\n`;
-            message += `Payment Method: Cash / Transfer\n\n`;
-            message += `Please confirm availability.`;
-
-            window.open(
-              `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-              "_blank",
-            );
-          } catch (error) {
-            console.error("Error:", error);
-            alert("Error creating order. Please try again.");
-          }
-        };
-
-        // Copy button
-        document.getElementById("copyBtn").onclick = () => {
-          const orderText = buildOrderText();
-          navigator.clipboard.writeText(orderText).then(() => {
-            document.getElementById("copySuccess").classList.remove("d-none");
-            setTimeout(() => {
-              document.getElementById("copySuccess").classList.add("d-none");
-            }, 3000);
-          });
-        };
-
-        // Instagram button
-        document.getElementById("instagramBtn").onclick = () => {
-          window.open(`https://instagram.com/${INSTAGRAM_USERNAME}`, "_blank");
-        };
-      });
-
+      // Define functions first
       function renderOrderSummary() {
         const cart = getCart();
         const orderSummary = document.getElementById("orderSummary");
@@ -287,13 +184,6 @@
         }
       }
 
-      // Auto-uppercase coupon input
-      document
-        .getElementById("couponCode")
-        .addEventListener("input", function () {
-          this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-        });
-
       function buildOrderText() {
         const cart = getCart();
         let text = `🛒 Order from MorishCart\n📅 ${new Date().toLocaleDateString()}\n\n`;
@@ -314,6 +204,125 @@
         text += `💰 Total: $${total.toFixed(2)}\n📍 Delivery needed? Yes/No\n💳 Payment: Cash/Transfer\n\nPlease confirm this order 👍`;
         return text;
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Wait for carts.js to load
+        setTimeout(() => {
+          const cart = getCart();
+          const orderSummary = document.getElementById("orderSummary");
+
+          if (cart.length === 0) {
+            window.location.href = "/";
+            return;
+          }
+
+          // Calculate and store original total
+          originalTotal = getCartTotal();
+
+          // Render order summary
+          renderOrderSummary();
+        }, 100);
+
+        // WhatsApp button
+        document.getElementById("whatsappBtn").onclick = async () => {
+          try {
+            const finalTotal = appliedCoupon
+              ? originalTotal - appliedCoupon.discount
+              : originalTotal;
+
+            const orderPayload = {
+              totalAmount: finalTotal,
+            };
+
+            // Add coupon data if applied
+            if (appliedCoupon) {
+              orderPayload.couponCode = appliedCoupon.code;
+              orderPayload.discountAmount = appliedCoupon.discount;
+            }
+
+            const response = await fetch("/api/checkout/create", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderPayload),
+            });
+
+            const orderData = await response.json();
+
+            if (!orderData.success) {
+              console.error("Server error:", orderData.error);
+              alert(`Error creating order: ${orderData.error || 'Please try again.'}`);
+              return;
+            }
+
+            // Build WhatsApp message
+            const cart = getCart();
+            const date = new Date().toLocaleDateString();
+
+            let message = `🛒 MorishCart Order\n`;
+            message += `Order ID: ${orderData.orderId}\n`;
+            message += `Date: ${date}\n\n`;
+            message += `*ITEMS:*\n`;
+
+            cart.forEach((item, index) => {
+              const itemTotal = item.price * item.quantity;
+              // Use escapeHtml for safety, but for WhatsApp we need plain text
+              const safeName = item.name.replace(/[<>&"']/g, '');
+              message += `${index + 1}. ${safeName} × ${item.quantity} — $${itemTotal.toFixed(2)}\n`;
+            });
+
+            message += `\n----------------------\n`;
+            message += `Subtotal: $${originalTotal.toFixed(2)}\n`;
+
+            message += `Subtotal: $${originalTotal.toFixed(2)}\n`;
+
+            if (appliedCoupon) {
+              message += `Coupon: ${appliedCoupon.code} (-$${appliedCoupon.discount.toFixed(2)})\n`;
+              message += `*TOTAL: $${finalTotal.toFixed(2)}*\n`;
+            } else {
+              message += `*TOTAL: $${originalTotal.toFixed(2)}*\n`;
+            }
+
+            message += `📋 Ref: ${orderData.verificationCode}\n`;
+            message += `----------------------\n\n`;
+            message += `Delivery Required: Yes / No\n`;
+            message += `Payment Method: Cash / Transfer\n\n`;
+            message += `Please confirm availability.`;
+
+            window.open(
+              `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+              "_blank",
+            );
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Error creating order. Please try again.");
+          }
+        };
+
+        // Copy button
+        document.getElementById("copyBtn").onclick = () => {
+          const orderText = buildOrderText();
+          navigator.clipboard.writeText(orderText).then(() => {
+            document.getElementById("copySuccess").classList.remove("d-none");
+            setTimeout(() => {
+              document.getElementById("copySuccess").classList.add("d-none");
+            }, 3000);
+          });
+        };
+
+        // Instagram button
+        document.getElementById("instagramBtn").onclick = () => {
+          window.open(`https://instagram.com/${INSTAGRAM_USERNAME}`, "_blank");
+        };
+      });
+
+      // Auto-uppercase coupon input
+      document
+        .getElementById("couponCode")
+        .addEventListener("input", function () {
+          this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        });
     </script>
   </body>
 </html>
