@@ -88,7 +88,11 @@ async function createAllTables() {
 
   // Posts table
   await pool.execute(`
-    CREATE TABLE IF NOT EXISTS posts (
+    DROP TABLE IF EXISTS posts
+  `);
+  
+  await pool.execute(`
+    CREATE TABLE posts (
       id INT AUTO_INCREMENT PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
       slug VARCHAR(255) NOT NULL UNIQUE,
