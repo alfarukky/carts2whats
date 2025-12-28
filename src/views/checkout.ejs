@@ -88,6 +88,24 @@
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/carts.js"></script>
     <script>
+      // WhatsApp number validation
+      const serverWhatsAppNumber = "<%= whatsappNumber %>"
+      console.log(serverWhatsAppNumber);
+      const clientWhatsAppNumber = "2348174352137"; // from carts.js
+      
+      if (serverWhatsAppNumber !== clientWhatsAppNumber) {
+        document.addEventListener("DOMContentLoaded", () => {
+          const whatsappBtn = document.getElementById('whatsappBtn');
+          if (whatsappBtn) {
+            whatsappBtn.style.display = 'none';
+            const warning = document.createElement('div');
+            warning.className = 'alert alert-warning mt-2';
+            warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> WhatsApp contact updated. Please contact admin.';
+            whatsappBtn.parentNode.appendChild(warning);
+          }
+        });
+      }
+      
       // appliedCoupon is already declared in carts.js
       let originalTotal = 0;
 
@@ -225,80 +243,9 @@
 
         // WhatsApp button
         document.getElementById("whatsappBtn").onclick = async () => {
-          try {
-            const finalTotal = appliedCoupon
-              ? originalTotal - appliedCoupon.discount
-              : originalTotal;
-
-            const orderPayload = {
-              totalAmount: finalTotal,
-            };
-
-            // Add coupon data if applied
-            if (appliedCoupon) {
-              orderPayload.couponCode = appliedCoupon.code;
-              orderPayload.discountAmount = appliedCoupon.discount;
-            }
-
-            const response = await fetch("/api/checkout/create", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(orderPayload),
-            });
-
-            const orderData = await response.json();
-
-            if (!orderData.success) {
-              console.error("Server error:", orderData.error);
-              alert(`Error creating order: ${orderData.error || 'Please try again.'}`);
-              return;
-            }
-
-            // Build WhatsApp message
-            const cart = getCart();
-            const date = new Date().toLocaleDateString();
-
-            let message = `🛒 MorishCart Order\n`;
-            message += `Order ID: ${orderData.orderId}\n`;
-            message += `Date: ${date}\n\n`;
-            message += `*ITEMS:*\n`;
-
-            cart.forEach((item, index) => {
-              const itemTotal = item.price * item.quantity;
-              // Use escapeHtml for safety, but for WhatsApp we need plain text
-              const safeName = item.name.replace(/[<>&"']/g, '');
-              message += `${index + 1}. ${safeName} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
-            });
-
-            message += `\n----------------------\n`;
-            message += `Subtotal: ₦${originalTotal.toFixed(2)}\n`;
-
-            message += `Subtotal: ₦${originalTotal.toFixed(2)}\n`;
-
-            if (appliedCoupon) {
-              message += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
-              message += `*TOTAL: ₦${finalTotal.toFixed(2)}*\n`;
-            } else {
-              message += `*TOTAL: ₦${originalTotal.toFixed(2)}*\n`;
-            }
-
-            message += `📋 Ref: ${orderData.verificationCode}\n`;
-            message += `----------------------\n\n`;
-            message += `Delivery Required: Yes / No\n`;
-            message += `Payment Method: Cash / Transfer\n\n`;
-            message += `Please confirm availability.`;
-
-            window.open(
-              `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-              "_blank",
-            );
-          } catch (error) {
-            console.error("Error:", error);
-            alert("Error creating order. Please try again.");
-          }
+          await buildWhatsAppMessage(true);
         };
+        });
 
         // Copy button
         document.getElementById("copyBtn").onclick = () => {
@@ -315,7 +262,6 @@
         document.getElementById("instagramBtn").onclick = () => {
           window.open(`https://instagram.com/${INSTAGRAM_USERNAME}`, "_blank");
         };
-      });
 
       // Auto-uppercase coupon input
       document

@@ -2,10 +2,12 @@ import {
   generateOrderId,
   createOrderVerification,
 } from "../utils/orderVerification.utils.js";
+import "dotenv/config";
 
 export const showCheckout = (req, res) => {
   res.render("checkout", {
     title: "Order Confirmation - MorishCart",
+    whatsappNumber: process.env.WHATSAPP_NUMBER,
   });
 };
 

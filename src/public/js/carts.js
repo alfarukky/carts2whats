@@ -259,7 +259,7 @@ function renderCart() {
 /* ===============================
    WHATSAPP CHECKOUT
 ================================ */
-async function buildWhatsAppMessage() {
+async function buildWhatsAppMessage(openDirectly = false) {
   const cart = getCart();
 
   if (!cart || cart.length === 0) {
@@ -306,7 +306,8 @@ async function buildWhatsAppMessage() {
 
     cart.forEach((item, index) => {
       const itemTotal = item.price * item.quantity;
-      message += `${index + 1}. ${escapeHtml(item.name)} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
+      const safeName = item.name.replace(/[<>&"']/g, '');
+      message += `${index + 1}. ${safeName} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
     });
 
     message += `\n----------------------\n`;
@@ -318,11 +319,19 @@ async function buildWhatsAppMessage() {
     } else {
       message += `*TOTAL: ₦${total.toFixed(2)}*\n`;
     }
-    message += `Ref: ${orderData.verificationCode}\n`;
+    message += `📋 Ref: ${orderData.verificationCode}\n`;
     message += `----------------------\n\n`;
     message += `Delivery Required: Yes / No\n`;
     message += `Payment Method: Cash / Transfer\n\n`;
     message += `Please confirm availability.`;
+
+    if (openDirectly) {
+      window.open(
+        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+        "_blank",
+      );
+      return true;
+    }
 
     return encodeURIComponent(message);
   } catch (error) {
