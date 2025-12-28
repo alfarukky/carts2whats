@@ -92,14 +92,14 @@
                 <code><%= order.order_id %></code>
               </td>
               <td>
-                <strong>$<%= order.total_amount %></strong>
+                <strong>₦<%= order.total_amount %></strong>
               </td>
               <td>
                 <% if (order.coupon_code) { %>
                 <small class="text-success">
                   <%= order.coupon_code %><br />
                   <span class="text-muted"
-                    >-$<%= order.discount_amount || 0 %></span
+                    >-₦<%= order.discount_amount || 0 %></span
                   >
                 </small>
                 <% } else { %>

@@ -7,6 +7,7 @@ export async function initializeDatabase() {
   try {
     await createAllTables();
     await createSuperAdmin();
+    await seedPromoCards();
     console.log('✅ Database initialization completed!');
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
@@ -96,7 +97,7 @@ async function createAllTables() {
       meta_description TEXT,
       featured_image VARCHAR(255),
       og_image VARCHAR(255),
-      type ENUM('blog', 'event') DEFAULT 'blog',
+      type ENUM('article', 'event') DEFAULT 'article',
       event_date DATE NULL,
       event_end_date DATE NULL,
       event_location VARCHAR(255) NULL,
@@ -153,4 +154,19 @@ async function createSuperAdmin() {
   );
 
   console.log("✓ Super admin created:", email);
+}
+
+async function seedPromoCards() {
+  const [rows] = await pool.execute("SELECT COUNT(*) as count FROM promo_cards");
+  
+  if (rows[0].count === 0) {
+    await pool.execute(`
+      INSERT INTO promo_cards (id, title, subtitle, small_text, image, button_link)
+      VALUES 
+        (1, 'Special Offer', 'Limited Time Deal', 'Save Big Today', 'product1.jpg', '/api/products'),
+        (2, 'Fresh Products', 'Quality Guaranteed', 'Best Selection', 'product2.jpg', '/api/products'),
+        (3, 'Great Savings', 'Everyday Low Prices', 'Shop Now', 'product3.jpg', '/api/products')
+    `);
+    console.log("✓ Default promo cards created");
+  }
 }
