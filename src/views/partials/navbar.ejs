@@ -1,24 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3">
+<nav
+  class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 fixed-top"
+>
   <div class="container">
     <!-- Logo -->
     <a class="navbar-brand fw-bold text-success" href="/">
       <img src="" alt="logo" class="me-2" style="display: none" />
       MorishCart
     </a>
-
-    <!-- Mobile Toggle -->
-    <button
-      class="navbar-toggler border-0"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
     <!-- Navigation Content -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <!-- Navigation Links -->
@@ -53,7 +41,10 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-success fw-semibold" href="/api/admin/coupons">
+          <a
+            class="nav-link text-success fw-semibold"
+            href="/api/admin/coupons"
+          >
             <i class="fa fa-tags me-1"></i>Coupons
           </a>
         </li>
@@ -93,28 +84,41 @@
           </a>
           <% } %>
         </div>
-
-        <!-- Cart -->
-        <div
-          class="position-relative"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#cartOffcanvas"
-          style="cursor: pointer"
-        >
-          <span
-            class="action-icon rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
-          >
-            <i class="fa-solid fa-cart-shopping text-success"></i>
-          </span>
-          <span
-            id="cartCount"
-            class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
-            style="display: none"
-          >
-            0
-          </span>
-        </div>
       </div>
     </div>
+    <!-- Cart (Always Visible) -->
+    <div class="d-flex align-items-center ms-auto me-3">
+      <div
+        class="position-relative"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#cartOffcanvas"
+        style="cursor: pointer"
+      >
+        <span
+          class="action-icon rounded-circle border d-flex align-items-center justify-content-center p-2 bg-white"
+        >
+          <i class="fa-solid fa-cart-shopping text-success"></i>
+        </span>
+        <span
+          id="cartCount"
+          class="position-absolute top-0 end-0 translate-middle badge bg-success rounded-pill"
+          style="display: none"
+        >
+          0
+        </span>
+      </div>
+    </div>
+    <!-- Mobile Toggle -->
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
   </div>
 </nav>
