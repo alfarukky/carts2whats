@@ -1,0 +1,54 @@
+{
+  "branding": {
+    "siteName": "MorishCart",
+    "tagline": "Premium-quality groceries and home essentials delivered fast",
+    "companyName": "MorishCart"
+  },
+  "hero": {
+    "title": "Welcome to",
+    "badge": "Fresh deals daily",
+    "description": "Premium-quality groceries and home essentials delivered fast. Fresh arrivals every day at unbeatable prices.",
+    "ctaPrimary": "Shop Now",
+    "ctaSecondary": "Browse Categories"
+  },
+  "banner": {
+    "text": "Super Value Deals - Save more with coupons",
+    "buttonText": "Quick Actions"
+  },
+  "sections": {
+    "categories": {
+      "title": "Shop Popular Categories",
+      "subtitle": ""
+    },
+    "products": {
+      "title": "Popular Products",
+      "emptyMessage": "No popular products selected yet.",
+      "addButton": "Add Products"
+    },
+    "services": {
+      "delivery": {
+        "title": "Fast & Reliable Delivery",
+        "description": "Get your items delivered quickly with Amazon's trusted logistics network across the country."
+      },
+      "payments": {
+        "title": "Secure Payments",
+        "description": "Pay safely with multiple options — credit card, UPI, Amazon Pay, and cash on delivery."
+      },
+      "returns": {
+        "title": "Easy Returns",
+        "description": "Hassle-free returns within 30 days. No questions asked policy for your peace of mind."
+      },
+      "support": {
+        "title": "24/7 Customer Support",
+        "description": "Round-the-clock assistance via phone, chat, or email. We're here to help anytime you need."
+      }
+    }
+  },
+  "contact": {
+    "whatsappNumber": "2348174352137",
+    "instagramUsername": "go3we_tech"
+  },
+  "footer": {
+    "description": "Your trusted online store for groceries, home essentials, and daily needs. Shop smart, save more, and enjoy fast delivery right to your doorstep."
+  }
+}

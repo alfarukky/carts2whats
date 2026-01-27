@@ -32,11 +32,9 @@
     <div class="row gy-4">
       <!-- Brand / About -->
       <div class="col-md-4">
-        <h5 class="fw-bold text-warning mb-3">MorishCart</h5>
+        <h5 class="fw-bold text-warning mb-3"><%= content.branding.siteName %></h5>
         <p class="small text-light">
-          Your trusted online store for groceries, home essentials, and daily
-          needs. Shop smart, save more, and enjoy fast delivery right to your
-          doorstep.
+          <%= content.footer.description %>
         </p>
         <a href="/api/products" class="btn btn-outline-warning btn-sm mt-2 px-4"
           >Shop Now <i class="fa-solid fa-arrow-right ms-2"></i
@@ -106,7 +104,7 @@
 
     <div class="text-center small">
       <p class="mb-0 text-light">
-        © <span id="current-year"></span> MorishCart. All Rights Reserved
+        © <span id="current-year"></span> <%= content.branding.siteName %>. All Rights Reserved
       </p>
     </div>
   </div>

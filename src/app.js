@@ -5,6 +5,8 @@ import mysqlSession from "express-mysql-session";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import { loadSiteContent } from "./config/content.js";
+import csrf from "csrf";
 
 import homeRoute from "./routes/home.route.js";
 import adminRoute from "./routes/admin.route.js";
@@ -15,12 +17,16 @@ import postRoute from "./routes/post.route.js";
 import contactRoute from "./routes/contact.route.js";
 import orderVerificationRoute from "./routes/orderVerification.route.js";
 import couponRoute from "./routes/coupon.route.js";
+import cartRoute from "./routes/cart.route.js";
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Load site content
+const siteContent = loadSiteContent();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -54,6 +60,18 @@ app.use(
 // Flash middleware
 app.use(flash());
 
+// CSRF Protection
+const tokens = new csrf();
+app.use((req, res, next) => {
+  if (!req.session.csrfSecret) {
+    req.session.csrfSecret = tokens.secretSync();
+  }
+  res.locals.csrfToken = tokens.create(req.session.csrfSecret);
+  next();
+});
+
+// CSRF validation middleware (removed - now using imported middleware)
+
 app.use((req, res, next) => {
   res.locals.admin = req.session.admin || null;
   next();
@@ -63,10 +81,12 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.content = siteContent;
   next();
 });
 
 app.use("/", homeRoute);
+app.use("/api/cart", cartRoute);
 app.use("/api/checkout", checkoutRoute);
 
 app.use("/api/auth", adminRoute);
@@ -80,9 +100,8 @@ app.use("/api/admin/coupons", couponRoute);
 // 404 handler - catch all undefined routes
 app.use((req, res) => {
   req.flash("error", "Page not found");
-  res.redirect('/');
+  res.redirect("/");
 });
-
 
 // Error handler - moved to end after all routes
 app.use((err, req, res, next) => {
