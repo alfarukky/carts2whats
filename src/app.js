@@ -17,7 +17,7 @@ import postRoute from "./routes/post.route.js";
 import contactRoute from "./routes/contact.route.js";
 import orderVerificationRoute from "./routes/orderVerification.route.js";
 import couponRoute from "./routes/coupon.route.js";
-import cartRoute from "./routes/cart.route.js";
+
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -86,7 +86,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/", homeRoute);
-app.use("/api/cart", cartRoute);
 app.use("/api/checkout", checkoutRoute);
 
 app.use("/api/auth", adminRoute);
