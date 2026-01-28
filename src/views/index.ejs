@@ -92,6 +92,7 @@
                 <img
                   src="/uploads/<%= card.image %>"
                   class="img-fluid promo-img"
+                  onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
                 />
               </div>
 
@@ -583,6 +584,7 @@
                     width="200"
                     height="200"
                     loading="lazy"
+                    onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
                   />
                 </div>
 

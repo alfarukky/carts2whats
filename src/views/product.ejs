@@ -104,6 +104,7 @@
                 height="200"
                 loading="lazy"
                 data-full="/uploads/<%= product.image %>"
+                onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
               />
             </div>
 
@@ -256,6 +257,7 @@
                   src=""
                   class="img-fluid rounded"
                   alt=""
+                  onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
                 />
               </div>
 
