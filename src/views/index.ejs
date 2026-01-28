@@ -596,8 +596,14 @@
 
                 <!-- Rating -->
                 <div class="rating text-warning mb-1">
-                  <% for (let s = 1; s <= 5; s++) { %> <% if (s <=
-                  product.rating) { %>
+                  <% 
+                    function safeRating(rating) {
+                      const r = parseFloat(rating);
+                      return (r >= 1 && r <= 5) ? r : 0;
+                    }
+                    const validRating = safeRating(product.rating);
+                  %>
+                  <% for (let s = 1; s <= 5; s++) { %> <% if (s <= validRating) { %>
                   <i class="fa fa-star"></i>
                   <% } else { %>
                   <i class="fa fa-star-o"></i>

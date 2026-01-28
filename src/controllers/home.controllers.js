@@ -1,6 +1,6 @@
 import { pool } from "../config/db.js";
 import { promoColors, badgeClasses } from "../utils/admin.utils.js";
-import { sanitizeMarkdown } from "../utils/text.utils.js";
+import { sanitizeMarkdown } from "../utils/helpers.js";
 
 export async function renderLanding(req, res) {
   try {
