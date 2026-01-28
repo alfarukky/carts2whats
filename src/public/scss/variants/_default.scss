@@ -1,0 +1,45 @@
+// Default Theme - MorishCart Green
+$theme-primary: #55c57a;
+$theme-secondary: #2998ff;
+$theme-accent: #5643fa;
+$theme-success: #28b485;
+$theme-warning: #ffb900;
+$theme-danger: #ff6b6b;
+
+// Surface Colors
+$surface-light: #f7f7f7;
+$surface-dark: #333;
+$white: #fff;
+$black: #000;
+
+// Gray Scale
+$gray-100: #eee;
+$gray-600: #777;
+$gray-900: #333;
+
+// Generate CSS Custom Properties
+:root {
+  --theme-primary: #{$theme-primary};
+  --theme-secondary: #{$theme-secondary};
+  --theme-accent: #{$theme-accent};
+  --theme-success: #{$theme-success};
+  --theme-warning: #{$theme-warning};
+  --theme-danger: #{$theme-danger};
+
+  --surface-light: #{$surface-light};
+  --surface-dark: #{$surface-dark};
+  --white: #{$white};
+  --black: #{$black};
+
+  --gray-100: #{$gray-100};
+  --gray-600: #{$gray-600};
+  --gray-900: #{$gray-900};
+
+  // RGB values for alpha transparency
+  --theme-primary-rgb: 85, 197, 122;
+  --theme-secondary-rgb: 41, 152, 255;
+  --theme-accent-rgb: 86, 67, 250;
+  --theme-success-rgb: 40, 180, 133;
+  --theme-warning-rgb: 255, 185, 0;
+  --theme-danger-rgb: 255, 119, 48;
+}

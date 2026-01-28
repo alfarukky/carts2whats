@@ -1,0 +1,40 @@
+// Animation Mixins
+@mixin btn-hover-lift {
+  transition: all 0.25s ease;
+  transform: translateY(0);
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@mixin card-hover {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Responsive Mixins
+@mixin mobile-only {
+  @media (max-width: 767.98px) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+// Component Mixins
+@mixin form-focus($color) {
+  &:focus {
+    border-color: $color;
+    box-shadow: 0 0 5px rgba($color, 0.5);
+  }
+}
