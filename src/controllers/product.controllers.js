@@ -29,6 +29,10 @@ export async function listProducts(req, res) {
 
     const [products] = await pool.query(query, params);
 
+    products.forEach(product => {
+      product.badgeClass = product.badge && badgeClasses[product.badge] ? badgeClasses[product.badge] : '';
+    });
+
     res.render("product", {
       title: "All Products – morishCart",
       products,

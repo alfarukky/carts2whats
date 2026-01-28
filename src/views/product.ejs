@@ -82,7 +82,7 @@
           <div class="product-card p-3 border rounded-3 position-relative">
             <!-- Badge -->
             <span
-              class="badge <%= badgeClasses[product.badge] %> position-absolute top-0 start-0 m-2"
+              class="badge <%= product.badgeClass %> position-absolute top-0 start-0 m-2"
             >
               <%= product.badge !== "none" ? product.badge.toUpperCase() : "" %>
             </span>

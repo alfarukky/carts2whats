@@ -22,6 +22,10 @@ export async function renderLanding(req, res) {
       "SELECT * FROM products WHERE is_popular = 1 ORDER BY id DESC LIMIT 12",
     );
 
+    popularProducts.forEach(product => {
+      product.badgeClass = product.badge && badgeClasses[product.badge] ? badgeClasses[product.badge] : '';
+    });
+
     res.render("index", {
       title: "morishCart - Shopping made easy and efficient",
       promoCards: sanitizedPromoCards,
