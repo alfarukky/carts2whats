@@ -1,10 +1,10 @@
 // Import theme variables first
-@import "variants/default";
+@import 'variants/default';
 
 // Import core functionality
-@import "core/mixins";
-@import "core/utilities";
-@import "core/components";
+@import 'core/mixins';
+@import 'core/utilities';
+@import 'core/components';
 
 // Form utilities
 .form-inline {

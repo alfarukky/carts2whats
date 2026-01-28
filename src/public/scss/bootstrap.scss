@@ -1,8 +1,8 @@
 // Import theme colors
-@import "variants/default";
+@import 'variants/default';
 
 // Font Configuration
-$font-family-sans-serif: "Exo", sans-serif;
+$font-family-sans-serif: 'Exo', sans-serif;
 
 // Bootstrap Theme Integration
 $primary: $theme-primary;
@@ -19,4 +19,4 @@ $navbar-toggler-open-color: $theme-primary;
 $btn-border-radius: 0.5rem;
 $card-border-radius: 0.75rem;
 
-@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+@import '../../../node_modules/bootstrap/scss/bootstrap.scss';
