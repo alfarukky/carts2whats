@@ -1,5 +1,7 @@
 import { pool } from "../config/db.js";
 import { badgeClasses } from "../utils/admin.utils.js";
+import { sanitizeInput, validatePrice, validateRating, validateFileUpload } from "../utils/helpers.js";
+import { sanitizeInput, validatePrice, validateRating } from "../utils/helpers.js";
 
 /* ===============================
    PUBLIC + ADMIN: List Products
@@ -62,46 +64,64 @@ export function showAddProductForm(req, res) {
 ================================ */
 export async function addProduct(req, res) {
   try {
-    const {
-      name,
-      category,
-      badge,
-      description,
-      price,
-      old_price,
-      rating,
-      reviews,
-      video_url,
-      is_out_of_stock,
-    } = req.body;
+    const { name, category, badge, description, price, old_price, rating, reviews, video_url, is_out_of_stock } = req.body;
 
-    if (!name || !category || !price || !req.file) {
-      req.flash("error", "Please fill all required fields.");
+    // Validate required fields
+    if (!name || name.trim().length === 0) {
+      req.flash("error", "Product name is required.");
       return res.redirect("back");
     }
 
+    if (!category) {
+      req.flash("error", "Product category is required.");
+      return res.redirect("back");
+    }
+
+    // Validate price
+    if (!price || !validatePrice(price)) {
+      req.flash("error", "Valid price is required.");
+      return res.redirect("back");
+    }
+
+    // Validate rating if provided
+    if (rating && !validateRating(rating)) {
+      req.flash("error", "Rating must be between 1 and 5.");
+      return res.redirect("back");
+    }
+
+    // Validate file upload
+    const fileValidation = validateFileUpload(req.file);
+    if (!fileValidation.valid) {
+      req.flash("error", fileValidation.error);
+      return res.redirect("back");
+    }
+
+    // Validate video URL if provided
     if (video_url && !video_url.startsWith("http")) {
       req.flash("error", "Video URL must be a valid link.");
       return res.redirect("back");
     }
 
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(name).substring(0, 100);
+    const sanitizedDescription = description ? sanitizeInput(description).substring(0, 1000) : '';
+    const sanitizedVideoUrl = video_url ? sanitizeInput(video_url) : null;
+
     await pool.query(
-      `
-      INSERT INTO products 
+      `INSERT INTO products 
       (name, category, badge, description, price, old_price, rating, reviews, image, video_url, is_out_of_stock)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        name,
+        sanitizedName,
         category,
         badge || "none",
-        description,
-        price,
-        old_price || null,
-        rating || 0,
-        reviews || 0,
+        sanitizedDescription,
+        parseFloat(price),
+        old_price ? parseFloat(old_price) : null,
+        rating ? parseFloat(rating) : 0,
+        reviews ? parseInt(reviews) : 0,
         req.file.optimizedName || req.file.filename,
-        video_url || null,
+        sanitizedVideoUrl,
         is_out_of_stock === "1" ? 1 : 0,
       ],
     );
@@ -146,23 +166,50 @@ export async function showEditProductForm(req, res) {
 ================================ */
 export async function updateProduct(req, res) {
   try {
-    const {
-      name,
-      category,
-      badge,
-      description,
-      price,
-      old_price,
-      rating,
-      reviews,
-      video_url,
-      is_out_of_stock,
-    } = req.body;
+    const { name, category, badge, description, price, old_price, rating, reviews, video_url, is_out_of_stock } = req.body;
 
+    // Validate required fields
+    if (!name || name.trim().length === 0) {
+      req.flash("error", "Product name is required.");
+      return res.redirect("back");
+    }
+
+    if (!category) {
+      req.flash("error", "Product category is required.");
+      return res.redirect("back");
+    }
+
+    // Validate price
+    if (!price || !validatePrice(price)) {
+      req.flash("error", "Valid price is required.");
+      return res.redirect("back");
+    }
+
+    // Validate rating if provided
+    if (rating && !validateRating(rating)) {
+      req.flash("error", "Rating must be between 1 and 5.");
+      return res.redirect("back");
+    }
+
+    // Validate file upload if provided
+    if (req.file) {
+      const fileValidation = validateFileUpload(req.file);
+      if (!fileValidation.valid) {
+        req.flash("error", fileValidation.error);
+        return res.redirect("back");
+      }
+    }
+
+    // Validate video URL if provided
     if (video_url && !video_url.startsWith("http")) {
       req.flash("error", "Video URL must be a valid link.");
       return res.redirect("back");
     }
+
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(name).substring(0, 100);
+    const sanitizedDescription = description ? sanitizeInput(description).substring(0, 1000) : '';
+    const sanitizedVideoUrl = video_url ? sanitizeInput(video_url) : null;
 
     let query = `
       UPDATE products
@@ -171,15 +218,15 @@ export async function updateProduct(req, res) {
     `;
 
     const params = [
-      name,
+      sanitizedName,
       category,
       badge,
-      description,
-      price,
-      old_price || null,
-      rating || 0,
-      reviews || 0,
-      video_url || null,
+      sanitizedDescription,
+      parseFloat(price),
+      old_price ? parseFloat(old_price) : null,
+      rating ? parseFloat(rating) : 0,
+      reviews ? parseInt(reviews) : 0,
+      sanitizedVideoUrl,
       is_out_of_stock === "1" ? 1 : 0,
     ];
 
