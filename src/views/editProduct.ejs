@@ -140,7 +140,7 @@
               name="is_out_of_stock" 
               value="1" 
               id="stockToggle"
-              <%= product.is_out_of_stock ? 'checked' : '' %>
+              <% if (product.is_out_of_stock) { %>checked<% } %>
             />
             <label class="form-check-label" for="stockToggle">
               Mark as Out of Stock
