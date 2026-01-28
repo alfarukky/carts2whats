@@ -1,0 +1,153 @@
+// Import theme variables first
+@import "variants/default";
+
+// Import core functionality
+@import "core/mixins";
+@import "core/utilities";
+@import "core/components";
+
+// Form utilities
+.form-inline {
+  display: inline;
+}
+
+// Additional Styles
+.line {
+  width: 80px;
+  height: 2px;
+  margin-top: 3px;
+
+  &__small {
+    width: 50px;
+    height: 3px;
+    margin-top: 5px;
+  }
+
+  &--green {
+    background-color: var(--theme-primary);
+  }
+
+  &--orange {
+    background-color: var(--theme-warning);
+  }
+
+  &--blue {
+    background-color: var(--theme-secondary);
+  }
+}
+
+.deal-marquee {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  color: var(--theme-success);
+  font-weight: 600;
+  animation: move-left-right 10s linear infinite;
+
+  &:hover {
+    animation-play-state: paused;
+    cursor: pointer;
+  }
+}
+
+.to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 15px;
+  width: 65px;
+  height: 55px;
+  background: var(--theme-primary);
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--white);
+  font-size: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:hover {
+    background: var(--theme-success);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.alert {
+  transition: opacity 0.4s ease-out;
+}
+
+.flashMessage {
+  min-height: 40px;
+  transition: all 0.3s ease;
+}
+
+.error {
+  display: none;
+
+  &.visible {
+    display: block;
+  }
+}
+
+#cartCount {
+  transition: transform 0.2s ease-in-out;
+
+  &.animate {
+    transform: scale(1.3);
+  }
+}
+
+// Keyframes
+@keyframes move-left-right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// Mobile responsive adjustments
+.user-actions {
+  gap: 1rem;
+
+  @include mobile-only {
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    margin-bottom: 1rem;
+
+    .nav-link {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f8f9fa;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .nav-item .btn {
+    margin-bottom: 0.5rem;
+    width: 100%;
+    text-align: left;
+  }
+}
