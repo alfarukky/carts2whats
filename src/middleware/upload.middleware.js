@@ -6,6 +6,9 @@ import sharp from "sharp";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "../public/uploads"));
@@ -18,13 +21,23 @@ const storage = multer.diskStorage({
 
 const multerUpload = multer({ 
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  limits: { 
+    fileSize: 2 * 1024 * 1024,
+    files: 1
+  },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"));
+    const ext = path.extname(file.originalname).toLowerCase();
+    const mimeType = file.mimetype.toLowerCase();
+    
+    if (!allowedExtensions.includes(ext)) {
+      return cb(new multer.MulterError("INVALID_FILE_EXTENSION"));
     }
+    
+    if (!allowedMimeTypes.includes(mimeType)) {
+      return cb(new multer.MulterError("INVALID_MIME_TYPE"));
+    }
+    
+    cb(null, true);
   }
 });
 
@@ -51,6 +64,10 @@ export function uploadSingle(fieldName) {
         if (err instanceof multer.MulterError) {
           if (err.code === "LIMIT_FILE_SIZE") {
             req.flash("error", "Image too large. Maximum size is 2MB.");
+          } else if (err.code === "INVALID_FILE_EXTENSION") {
+            req.flash("error", "Invalid file type. Only JPG, PNG, GIF, and WebP images are allowed.");
+          } else if (err.code === "INVALID_MIME_TYPE") {
+            req.flash("error", "Invalid file format. Only image files are allowed.");
           } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
             req.flash("error", "Invalid file type. Only images are allowed.");
           } else {

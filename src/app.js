@@ -1,23 +1,21 @@
-import express from "express";
-import session from "express-session";
-import flash from "connect-flash";
-import mysqlSession from "express-mysql-session";
-import cookieParser from "cookie-parser";
-import path from "path";
-import { fileURLToPath } from "url";
-import { loadSiteContent } from "./config/content.js";
-import csrf from "csrf";
+import express from 'express';
+import session from 'express-session';
+import flash from 'connect-flash';
+import mysqlSession from 'express-mysql-session';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { loadSiteContent } from './config/content.js';
 
-import homeRoute from "./routes/home.route.js";
-import adminRoute from "./routes/admin.route.js";
-import promoRoute from "./routes/promo.route.js";
-import productRoute from "./routes/product.route.js";
-import checkoutRoute from "./routes/checkout.route.js";
-import postRoute from "./routes/post.route.js";
-import contactRoute from "./routes/contact.route.js";
-import orderVerificationRoute from "./routes/orderVerification.route.js";
-import couponRoute from "./routes/coupon.route.js";
-
+import homeRoute from './routes/home.route.js';
+import adminRoute from './routes/admin.route.js';
+import promoRoute from './routes/promo.route.js';
+import productRoute from './routes/product.route.js';
+import checkoutRoute from './routes/checkout.route.js';
+import postRoute from './routes/post.route.js';
+import contactRoute from './routes/contact.route.js';
+import orderVerificationRoute from './routes/orderVerification.route.js';
+import couponRoute from './routes/coupon.route.js';
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -28,12 +26,12 @@ const app = express();
 // Load site content
 const siteContent = loadSiteContent();
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
 // 🔥 SESSION + FLASH
@@ -49,7 +47,7 @@ const sessionStore = new MySQLStore({
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "flashsecret",
+    secret: process.env.SESSION_SECRET || 'flashsecret',
     resave: false,
     saveUninitialized: true,
     store: sessionStore,
@@ -60,18 +58,6 @@ app.use(
 // Flash middleware
 app.use(flash());
 
-// CSRF Protection
-const tokens = new csrf();
-app.use((req, res, next) => {
-  if (!req.session.csrfSecret) {
-    req.session.csrfSecret = tokens.secretSync();
-  }
-  res.locals.csrfToken = tokens.create(req.session.csrfSecret);
-  next();
-});
-
-// CSRF validation middleware (removed - now using imported middleware)
-
 app.use((req, res, next) => {
   res.locals.admin = req.session.admin || null;
   next();
@@ -79,34 +65,32 @@ app.use((req, res, next) => {
 
 // Global variables for all views
 app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
   res.locals.content = siteContent;
   next();
 });
 
-app.use("/", homeRoute);
-app.use("/api/checkout", checkoutRoute);
+app.use('/', homeRoute);
+app.use('/api/checkout', checkoutRoute);
 
-app.use("/api/auth", adminRoute);
-app.use("/api/admin/promo", promoRoute);
-app.use("/api/products", productRoute);
-app.use("/api/posts", postRoute);
-app.use("/contact", contactRoute);
-app.use("/api/admin/orders", orderVerificationRoute);
-app.use("/api/admin/coupons", couponRoute);
+app.use('/api/auth', adminRoute);
+app.use('/api/admin/promo', promoRoute);
+app.use('/api/products', productRoute);
+app.use('/api/posts', postRoute);
+app.use('/contact', contactRoute);
+app.use('/api/admin/orders', orderVerificationRoute);
+app.use('/api/admin/coupons', couponRoute);
 
 // 404 handler - catch all undefined routes
 app.use((req, res) => {
-  req.flash("error", "Page not found");
-  res.redirect("/");
+  req.flash('error', 'Page not found');
+  res.redirect('/');
 });
 
 // Error handler - moved to end after all routes
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  req.flash("error", "Internal Server Error");
-  res.redirect("back");
+  req.flash('error', 'Internal Server Error');
+  res.redirect('back');
 });
 
 export default app;

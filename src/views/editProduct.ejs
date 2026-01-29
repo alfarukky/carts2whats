@@ -19,6 +19,7 @@
         enctype="multipart/form-data"
         class="p-4 border rounded bg-white shadow-sm"
       >
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <!-- Name -->
         <div class="mb-3">
           <label class="form-label">Product Name</label>
@@ -70,12 +71,12 @@
         <!-- Prices -->
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Current Price ($)</label>
+            <label class="form-label">Current Price (₦)</label>
             <input type="number" step="0.01" name="price" class="form-control" value="<%= product.price %>" required />
           </div>
 
           <div class="col-md-6">
-            <label class="form-label">Old Price ($)</label>
+            <label class="form-label">Old Price (₦)</label>
             <input type="number" step="0.01" name="old_price" class="form-control" value="<%= product.old_price %>" />
           </div>
         </div>
@@ -84,8 +85,15 @@
         <div class="mb-3">
           <label class="form-label">Rating (1–5)</label>
           <select name="rating" class="form-select" required>
+            <% 
+              function safeRating(rating) {
+                const r = parseFloat(rating);
+                return (r >= 1 && r <= 5) ? r : 0;
+              }
+              const validRating = safeRating(product.rating);
+            %>
             <% for (let r = 1; r <= 5; r++) { %>
-              <option value="<%= r %>" <%= r == product.rating ? "selected" : "" %>><%= r %> Star</option>
+              <option value="<%= r %>" <%= r == validRating ? "selected" : "" %>><%= r %> Star</option>
             <% } %>
           </select>
         </div>
@@ -133,7 +141,7 @@
               name="is_out_of_stock" 
               value="1" 
               id="stockToggle"
-              <%= product.is_out_of_stock ? 'checked' : '' %>
+              <% if (product.is_out_of_stock) { %>checked<% } %>
             />
             <label class="form-check-label" for="stockToggle">
               Mark as Out of Stock

@@ -16,3 +16,7 @@
 commit.md
 find.md
 src/config/script.js
+
+# Ignore uploaded images
+src/public/uploads/*
+!src/public/uploads/.gitkeep

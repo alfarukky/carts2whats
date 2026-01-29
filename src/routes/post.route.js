@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
+import { validateCSRF } from "../middleware/csrf.middleware.js";
 import {
   listPosts,
   viewPost,
@@ -13,8 +14,8 @@ const postRoute = Router();
 postRoute.get("/", listPosts);
 postRoute.get("/admin/new", isLoggedIn, showPostForm);
 postRoute.get("/admin/:id/edit", isLoggedIn, showPostForm);
-postRoute.post("/admin/save", isLoggedIn, savePost);
-postRoute.get("/admin/:id", isLoggedIn, deletePost);
+postRoute.post("/admin/save", isLoggedIn, validateCSRF, savePost);
+postRoute.post("/admin/:id/delete", isLoggedIn, validateCSRF, deletePost);
 postRoute.get("/:slug", viewPost);
 
 export default postRoute;

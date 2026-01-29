@@ -92,6 +92,7 @@
                 <img
                   src="/uploads/<%= card.image %>"
                   class="img-fluid promo-img"
+                  onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
                 />
               </div>
 
@@ -561,7 +562,7 @@
               <div class="product-card p-3 border rounded-3 position-relative">
                 <!-- Badge -->
                 <span
-                  class="badge <%= badgeClasses[product.badge] %> position-absolute top-0 start-0 m-2"
+                  class="badge <%= product.badgeClass %> position-absolute top-0 start-0 m-2"
                 >
                   <%= product.badge !== "none" ? product.badge.toUpperCase() :
                   "" %>
@@ -583,6 +584,7 @@
                     width="200"
                     height="200"
                     loading="lazy"
+                    onerror="this.src='/images/placeholder-product.svg'; this.onerror=null;"
                   />
                 </div>
 
@@ -596,8 +598,14 @@
 
                 <!-- Rating -->
                 <div class="rating text-warning mb-1">
-                  <% for (let s = 1; s <= 5; s++) { %> <% if (s <=
-                  product.rating) { %>
+                  <% 
+                    function safeRating(rating) {
+                      const r = parseFloat(rating);
+                      return (r >= 1 && r <= 5) ? r : 0;
+                    }
+                    const validRating = safeRating(product.rating);
+                  %>
+                  <% for (let s = 1; s <= 5; s++) { %> <% if (s <= validRating) { %>
                   <i class="fa fa-star"></i>
                   <% } else { %>
                   <i class="fa fa-star-o"></i>
@@ -629,7 +637,7 @@
                   type="button"
                   class="btn btn-outline-success btn-sm w-100 add-to-cart-btn"
                   data-id="<%= product.id %>"
-                  data-name="<%= product.name %>"
+                  data-name="<%- JSON.stringify(product.name) %>"
                   data-price="<%= product.price %>"
                   data-image="/uploads/<%= product.image %>"
                 >
