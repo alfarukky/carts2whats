@@ -1,11 +1,11 @@
-<% if (error && error.length > 0) { %>
+<% if (typeof error !== 'undefined' && error && error.length > 0) { %>
   <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
     <strong>Error:</strong> <%= error[0] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
   </div>
 <% } %>
 
-<% if (success && success.length > 0) { %>
+<% if (typeof success !== 'undefined' && success && success.length > 0) { %>
   <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
     <strong>Success:</strong> <%= success[0] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
