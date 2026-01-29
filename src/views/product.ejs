@@ -191,7 +191,7 @@
               Edit
             </a>
 
-            <form action="/api/products/<%= product.id %>/delete" method="POST" style="display: inline;">
+            <form action="/api/products/<%= product.id %>/delete" method="POST" class="block-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button 
                 class="btn btn-danger btn-sm mb-1 w-100"
@@ -203,12 +203,12 @@
 
             <!-- Popular toggle -->
             <% if (product.is_popular === 1) { %>
-            <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" style="display: inline;">
+            <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" class="block-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button class="btn btn-secondary btn-sm w-100 mb-1">Remove Popular</button>
             </form>
             <% } else { %>
-            <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" style="display: inline;">
+            <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" class="block-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button class="btn btn-primary btn-sm w-100 mb-1">Make Popular</button>
             </form>
@@ -216,12 +216,12 @@
 
             <!-- Stock toggle -->
             <% if (product.is_out_of_stock) { %>
-            <form action="/api/products/<%= product.id %>/toggle-stock" method="POST" style="display: inline;">
+            <form action="/api/products/<%= product.id %>/toggle-stock" method="POST" class="block-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button class="btn btn-success btn-sm w-100">Restock Product</button>
             </form>
             <% } else { %>
-            <form action="/api/products/<%= product.id %>/toggle-stock" method="POST" style="display: inline;">
+            <form action="/api/products/<%= product.id %>/toggle-stock" method="POST" class="block-inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button class="btn btn-outline-danger btn-sm w-100">Mark Out of Stock</button>
             </form>
