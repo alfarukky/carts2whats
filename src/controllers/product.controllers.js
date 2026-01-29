@@ -1,8 +1,41 @@
-import { pool } from "../config/db.js";
-import { badgeClasses } from "../utils/admin.utils.js";
-import { sanitizeInput, validatePrice, validateRating, validateFileUpload } from "../utils/helpers.js";
-import { sanitizeInput, validatePrice, validateRating } from "../utils/helpers.js";
+import { pool } from '../config/db.js';
+import { badgeClasses } from '../utils/admin.utils.js';
+import {
+  sanitizeInput,
+  validatePrice,
+  validateRating,
+  validateFileUpload,
+} from '../utils/helpers.utils.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Helper function to delete image files
+async function deleteImageFile(filename) {
+  if (!filename) return;
+
+  const uploadsDir = path.join(__dirname, '../public/uploads');
+
+  try {
+    // Delete original file
+    await fs.unlink(path.join(uploadsDir, filename));
+  } catch (err) {
+    console.error('Failed to delete image:', filename, err.message);
+  }
+
+  // Delete optimized file if it exists (starts with 'opt-')
+  if (!filename.startsWith('opt-')) {
+    try {
+      const optFilename = 'opt-' + filename.replace(/\.\w+$/, '.webp');
+      await fs.unlink(path.join(uploadsDir, optFilename));
+    } catch (err) {
+      // Optimized file might not exist, ignore error
+    }
+  }
+}
 /* ===============================
    PUBLIC + ADMIN: List Products
 ================================ */
@@ -10,42 +43,47 @@ export async function listProducts(req, res) {
   try {
     const { category, sort } = req.query;
 
-    let query = "SELECT * FROM products";
+    let query = 'SELECT * FROM products';
     const params = [];
 
     // FILTER: Category
     if (category) {
-      query += " WHERE category = ?";
+      query += ' WHERE category = ?';
       params.push(category);
     }
 
     // SORTING
-    if (sort === "price_asc") {
-      query += " ORDER BY price ASC";
-    } else if (sort === "price_desc") {
-      query += " ORDER BY price DESC";
+    if (sort === 'price_asc') {
+      query += ' ORDER BY price ASC';
+    } else if (sort === 'price_desc') {
+      query += ' ORDER BY price DESC';
     } else {
       // Default: newest first
-      query += " ORDER BY id DESC";
+      query += ' ORDER BY id DESC';
     }
 
     const [products] = await pool.query(query, params);
 
-    products.forEach(product => {
-      product.badgeClass = product.badge && badgeClasses[product.badge] ? badgeClasses[product.badge] : '';
+    products.forEach((product) => {
+      product.badgeClass =
+        product.badge && badgeClasses[product.badge]
+          ? badgeClasses[product.badge]
+          : '';
     });
 
-    res.render("product", {
-      title: "All Products – morishCart",
+    res.render('product', {
+      title: 'All Products – morishCart',
       products,
       badgeClasses,
       admin: req.session.admin || null,
-      filters: { category, sort }, // 👈 important
+      filters: { category, sort },
+      success: req.flash('success'),
+      error: req.flash('error'),
     });
   } catch (err) {
-    console.error("LIST PRODUCTS ERROR:", err);
-    req.flash("error", "Failed to load products.");
-    return res.redirect("/");
+    console.error('LIST PRODUCTS ERROR:', err);
+    req.flash('error', 'Failed to load products.');
+    return res.redirect('/');
   }
 }
 
@@ -53,8 +91,8 @@ export async function listProducts(req, res) {
    ADMIN: Show Add Product Form
 ================================ */
 export function showAddProductForm(req, res) {
-  res.render("addProduct", {
-    title: "Add New Product – morishCart",
+  res.render('addProduct', {
+    title: 'Add New Product – morishCart',
     admin: req.session.admin,
   });
 }
@@ -64,74 +102,104 @@ export function showAddProductForm(req, res) {
 ================================ */
 export async function addProduct(req, res) {
   try {
-    const { name, category, badge, description, price, old_price, rating, reviews, video_url, is_out_of_stock } = req.body;
+    const {
+      name,
+      category,
+      badge,
+      description,
+      price,
+      old_price,
+      rating,
+      reviews,
+      video_url,
+      is_out_of_stock,
+    } = req.body;
+    // Check if file was uploaded
+    if (!req.file) {
+      req.flash('error', 'Product image is required.');
+      return res.redirect('/api/products/add');
+    }
 
     // Validate required fields
     if (!name || name.trim().length === 0) {
-      req.flash("error", "Product name is required.");
-      return res.redirect("back");
+      req.flash('error', 'Product name is required.');
+      return res.redirect('/api/products/add');
     }
 
     if (!category) {
-      req.flash("error", "Product category is required.");
-      return res.redirect("back");
+      req.flash('error', 'Product category is required.');
+      return res.redirect('/api/products/add');
     }
 
     // Validate price
     if (!price || !validatePrice(price)) {
-      req.flash("error", "Valid price is required.");
-      return res.redirect("back");
+      req.flash('error', 'Valid price is required.');
+      return res.redirect('/api/products/add');
     }
 
     // Validate rating if provided
     if (rating && !validateRating(rating)) {
-      req.flash("error", "Rating must be between 1 and 5.");
-      return res.redirect("back");
+      req.flash('error', 'Rating must be between 1 and 5.');
+      return res.redirect('/api/products/add');
     }
 
     // Validate file upload
     const fileValidation = validateFileUpload(req.file);
     if (!fileValidation.valid) {
-      req.flash("error", fileValidation.error);
-      return res.redirect("back");
+      req.flash('error', fileValidation.error);
+      return res.redirect('/api/products/add');
     }
 
     // Validate video URL if provided
-    if (video_url && !video_url.startsWith("http")) {
-      req.flash("error", "Video URL must be a valid link.");
-      return res.redirect("back");
+    if (video_url && !video_url.startsWith('http')) {
+      req.flash('error', 'Video URL must be a valid link.');
+      return res.redirect('/api/products/add');
     }
 
     // Sanitize inputs
     const sanitizedName = sanitizeInput(name).substring(0, 100);
-    const sanitizedDescription = description ? sanitizeInput(description).substring(0, 1000) : '';
+    const sanitizedDescription = description
+      ? sanitizeInput(description).substring(0, 1000)
+      : '';
     const sanitizedVideoUrl = video_url ? sanitizeInput(video_url) : null;
+
+    // Validate and clamp rating (0-5, 1 decimal place)
+    const validRating = rating
+      ? Math.max(0, Math.min(5, Math.round(parseFloat(rating) * 10) / 10))
+      : 0;
+
+    // Validate and clamp reviews (0-10000, integer only)
+    const validReviews = reviews
+      ? Math.max(0, Math.min(10000, parseInt(reviews)))
+      : 0;
+
+    const queryParams = [
+      sanitizedName,
+      category,
+      badge || 'none',
+      sanitizedDescription,
+      parseFloat(price),
+      old_price ? parseFloat(old_price) : null,
+      validRating,
+      validReviews,
+      req.file.optimizedName || req.file.filename,
+      sanitizedVideoUrl,
+      is_out_of_stock === '1' ? 1 : 0,
+    ];
 
     await pool.query(
       `INSERT INTO products 
       (name, category, badge, description, price, old_price, rating, reviews, image, video_url, is_out_of_stock)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        sanitizedName,
-        category,
-        badge || "none",
-        sanitizedDescription,
-        parseFloat(price),
-        old_price ? parseFloat(old_price) : null,
-        rating ? parseFloat(rating) : 0,
-        reviews ? parseInt(reviews) : 0,
-        req.file.optimizedName || req.file.filename,
-        sanitizedVideoUrl,
-        is_out_of_stock === "1" ? 1 : 0,
-      ],
+      queryParams,
     );
 
-    req.flash("success", "Product added successfully!");
-    res.redirect("/api/products");
+    req.flash('success', 'Product added successfully!');
+    res.redirect('/api/products');
   } catch (err) {
-    console.error("ADD PRODUCT ERROR:", err);
-    req.flash("error", "Failed to add product.");
-    res.redirect("back");
+    console.error('ADD PRODUCT ERROR:', err);
+    req.flash('error', 'Failed to add product.');
+    res.redirect('/api/products/add');
   }
 }
 
@@ -140,24 +208,24 @@ export async function addProduct(req, res) {
 ================================ */
 export async function showEditProductForm(req, res) {
   try {
-    const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
+    const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [
       req.params.id,
     ]);
 
     if (!rows.length) {
-      req.flash("error", "Product not found.");
-      return res.redirect("/api/products");
+      req.flash('error', 'Product not found.');
+      return res.redirect('/api/products');
     }
 
-    res.render("editProduct", {
-      title: "Edit Product – morishCart",
+    res.render('editProduct', {
+      title: 'Edit Product – morishCart',
       product: rows[0],
       admin: req.session.admin,
     });
   } catch (err) {
-    console.error("SHOW EDIT ERROR:", err);
-    req.flash("error", "Cannot load product.");
-    res.redirect("back");
+    console.error('SHOW EDIT ERROR:', err);
+    req.flash('error', 'Cannot load product.');
+    res.redirect('back');
   }
 }
 
@@ -166,50 +234,84 @@ export async function showEditProductForm(req, res) {
 ================================ */
 export async function updateProduct(req, res) {
   try {
-    const { name, category, badge, description, price, old_price, rating, reviews, video_url, is_out_of_stock } = req.body;
+    const {
+      name,
+      category,
+      badge,
+      description,
+      price,
+      old_price,
+      rating,
+      reviews,
+      video_url,
+      is_out_of_stock,
+    } = req.body;
+
+    // Check if product exists and get current image
+    const [existingProduct] = await pool.query(
+      'SELECT image FROM products WHERE id = ?',
+      [req.params.id],
+    );
+
+    if (!existingProduct.length) {
+      req.flash('error', 'Product not found.');
+      return res.redirect('/api/products');
+    }
 
     // Validate required fields
     if (!name || name.trim().length === 0) {
-      req.flash("error", "Product name is required.");
-      return res.redirect("back");
+      req.flash('error', 'Product name is required.');
+      return res.redirect('back');
     }
 
     if (!category) {
-      req.flash("error", "Product category is required.");
-      return res.redirect("back");
+      req.flash('error', 'Product category is required.');
+      return res.redirect('back');
     }
 
     // Validate price
     if (!price || !validatePrice(price)) {
-      req.flash("error", "Valid price is required.");
-      return res.redirect("back");
+      req.flash('error', 'Valid price is required.');
+      return res.redirect('back');
     }
 
     // Validate rating if provided
     if (rating && !validateRating(rating)) {
-      req.flash("error", "Rating must be between 1 and 5.");
-      return res.redirect("back");
+      req.flash('error', 'Rating must be between 1 and 5.');
+      return res.redirect('back');
     }
 
     // Validate file upload if provided
     if (req.file) {
       const fileValidation = validateFileUpload(req.file);
       if (!fileValidation.valid) {
-        req.flash("error", fileValidation.error);
-        return res.redirect("back");
+        req.flash('error', fileValidation.error);
+        return res.redirect('back');
       }
     }
 
     // Validate video URL if provided
-    if (video_url && !video_url.startsWith("http")) {
-      req.flash("error", "Video URL must be a valid link.");
-      return res.redirect("back");
+    if (video_url && !video_url.startsWith('http')) {
+      req.flash('error', 'Video URL must be a valid link.');
+      return res.redirect('back');
     }
 
     // Sanitize inputs
     const sanitizedName = sanitizeInput(name).substring(0, 100);
-    const sanitizedDescription = description ? sanitizeInput(description).substring(0, 1000) : '';
+    const sanitizedDescription = description
+      ? sanitizeInput(description).substring(0, 1000)
+      : '';
     const sanitizedVideoUrl = video_url ? sanitizeInput(video_url) : null;
+
+    // Validate and clamp rating (0-5, 1 decimal place)
+    const validRating = rating
+      ? Math.max(0, Math.min(5, Math.round(parseFloat(rating) * 10) / 10))
+      : 0;
+
+    // Validate and clamp reviews (0-10000, integer only)
+    const validReviews = reviews
+      ? Math.max(0, Math.min(10000, parseInt(reviews)))
+      : 0;
 
     let query = `
       UPDATE products
@@ -224,28 +326,32 @@ export async function updateProduct(req, res) {
       sanitizedDescription,
       parseFloat(price),
       old_price ? parseFloat(old_price) : null,
-      rating ? parseFloat(rating) : 0,
-      reviews ? parseInt(reviews) : 0,
+      validRating,
+      validReviews,
       sanitizedVideoUrl,
-      is_out_of_stock === "1" ? 1 : 0,
+      is_out_of_stock === '1' ? 1 : 0,
     ];
 
+    // If new image uploaded, delete old image and update query
     if (req.file) {
-      query += ", image = ?";
+      // Delete old image file
+      await deleteImageFile(existingProduct[0].image);
+
+      query += ', image = ?';
       params.push(req.file.optimizedName || req.file.filename);
     }
 
-    query += " WHERE id = ?";
+    query += ' WHERE id = ?';
     params.push(req.params.id);
 
     await pool.query(query, params);
 
-    req.flash("success", "Product updated successfully!");
-    res.redirect("/api/products");
+    req.flash('success', 'Product updated successfully!');
+    res.redirect('/api/products');
   } catch (err) {
-    console.error("UPDATE PRODUCT ERROR:", err);
-    req.flash("error", "Failed to update product.");
-    res.redirect("back");
+    console.error('UPDATE PRODUCT ERROR:', err);
+    req.flash('error', 'Failed to update product.');
+    res.redirect('back');
   }
 }
 
@@ -254,14 +360,29 @@ export async function updateProduct(req, res) {
 ================================ */
 export async function deleteProduct(req, res) {
   try {
-    await pool.query("DELETE FROM products WHERE id = ?", [req.params.id]);
+    // Check if product exists and get image filename
+    const [product] = await pool.query(
+      'SELECT image FROM products WHERE id = ?',
+      [req.params.id],
+    );
 
-    req.flash("success", "Product deleted successfully.");
-    res.redirect("/api/products");
+    if (!product.length) {
+      req.flash('error', 'Product not found.');
+      return res.redirect('/api/products');
+    }
+
+    // Delete image file before deleting product
+    await deleteImageFile(product[0].image);
+
+    // Delete product from database
+    await pool.query('DELETE FROM products WHERE id = ?', [req.params.id]);
+
+    req.flash('success', 'Product deleted successfully.');
+    res.redirect('/api/products');
   } catch (err) {
-    console.error("DELETE PRODUCT ERROR:", err);
-    req.flash("error", "Deletion failed.");
-    res.redirect("back");
+    console.error('DELETE PRODUCT ERROR:', err);
+    req.flash('error', 'Deletion failed.');
+    res.redirect('/api/products');
   }
 }
 
@@ -270,30 +391,36 @@ export async function deleteProduct(req, res) {
 ================================ */
 export async function togglePopular(req, res) {
   try {
-    const [[product]] = await pool.query(
-      "SELECT is_popular FROM products WHERE id = ?",
+    // Check if product exists and get current status
+    const [product] = await pool.query(
+      'SELECT is_popular FROM products WHERE id = ?',
       [req.params.id],
     );
 
-    const newStatus = product.is_popular ? 0 : 1;
+    if (!product.length) {
+      req.flash('error', 'Product not found.');
+      return res.redirect('/api/products');
+    }
 
-    await pool.query("UPDATE products SET is_popular = ? WHERE id = ?", [
+    const newStatus = product[0].is_popular ? 0 : 1;
+
+    await pool.query('UPDATE products SET is_popular = ? WHERE id = ?', [
       newStatus,
       req.params.id,
     ]);
 
     req.flash(
-      "success",
+      'success',
       newStatus
-        ? "Product added to Popular Section!"
-        : "Product removed from Popular Section.",
+        ? 'Product added to Popular Section!'
+        : 'Product removed from Popular Section.',
     );
 
-    res.redirect("/api/products");
+    res.redirect('/api/products');
   } catch (err) {
-    console.error("TOGGLE POPULAR ERROR:", err);
-    req.flash("error", "Failed to update popular status.");
-    res.redirect("back");
+    console.error('TOGGLE POPULAR ERROR:', err);
+    req.flash('error', 'Failed to update popular status.');
+    res.redirect('/api/products');
   }
 }
 
@@ -302,29 +429,35 @@ export async function togglePopular(req, res) {
 ================================ */
 export async function toggleStock(req, res) {
   try {
-    const [[product]] = await pool.query(
-      "SELECT is_out_of_stock FROM products WHERE id = ?",
+    // Check if product exists and get current status
+    const [product] = await pool.query(
+      'SELECT is_out_of_stock FROM products WHERE id = ?',
       [req.params.id],
     );
 
-    const newStatus = product.is_out_of_stock ? 0 : 1;
+    if (!product.length) {
+      req.flash('error', 'Product not found.');
+      return res.redirect('/api/products');
+    }
 
-    await pool.query("UPDATE products SET is_out_of_stock = ? WHERE id = ?", [
+    const newStatus = product[0].is_out_of_stock ? 0 : 1;
+
+    await pool.query('UPDATE products SET is_out_of_stock = ? WHERE id = ?', [
       newStatus,
       req.params.id,
     ]);
 
     req.flash(
-      "success",
+      'success',
       newStatus
-        ? "Product marked as Out of Stock!"
-        : "Product restocked successfully!",
+        ? 'Product marked as Out of Stock!'
+        : 'Product restocked successfully!',
     );
 
-    res.redirect("/api/products");
+    res.redirect('/api/products');
   } catch (err) {
-    console.error("TOGGLE STOCK ERROR:", err);
-    req.flash("error", "Failed to update stock status.");
-    res.redirect("back");
+    console.error('TOGGLE STOCK ERROR:', err);
+    req.flash('error', 'Failed to update stock status.');
+    res.redirect('/api/products');
   }
 }
