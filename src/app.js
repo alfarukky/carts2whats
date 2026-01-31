@@ -58,13 +58,11 @@ app.use(
 // Flash middleware
 app.use(flash());
 
+// Global variables for all views (including flash messages)
 app.use((req, res, next) => {
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
   res.locals.admin = req.session.admin || null;
-  next();
-});
-
-// Global variables for all views
-app.use((req, res, next) => {
   res.locals.content = siteContent;
   next();
 });
