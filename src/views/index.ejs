@@ -654,11 +654,9 @@
                   >Edit</a
                 >
 
-                <a
-                  href="/api/products/<%= product.id %>/toggle-popular"
-                  class="btn btn-danger btn-sm w-50 ms-1"
-                  >Remove
-                </a>
+                <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" class="w-50 ms-1">
+                  <button type="submit" class="btn btn-danger btn-sm w-100">Remove</button>
+                </form>
               </div>
               <% } %>
             </div>
