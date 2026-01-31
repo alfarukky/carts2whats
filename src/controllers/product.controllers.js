@@ -77,8 +77,6 @@ export async function listProducts(req, res) {
       badgeClasses,
       admin: req.session.admin || null,
       filters: { category, sort },
-      success: req.flash('success'),
-      error: req.flash('error'),
     });
   } catch (err) {
     console.error('LIST PRODUCTS ERROR:', err);
