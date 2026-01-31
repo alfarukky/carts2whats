@@ -58,13 +58,11 @@ app.use(
 // Flash middleware
 app.use(flash());
 
+// Global variables for all views (including flash messages)
 app.use((req, res, next) => {
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
   res.locals.admin = req.session.admin || null;
-  next();
-});
-
-// Global variables for all views
-app.use((req, res, next) => {
   res.locals.content = siteContent;
   next();
 });
@@ -81,16 +79,29 @@ app.use('/api/admin/orders', orderVerificationRoute);
 app.use('/api/admin/coupons', couponRoute);
 
 // 404 handler - catch all undefined routes
-app.use((req, res) => {
-  req.flash('error', 'Page not found');
-  res.redirect('/');
+app.use((req, res, next) => {
+  res.status(404).render('404', { 
+    title: 'Page Not Found',
+    message: 'Page not found',
+    url: req.originalUrl 
+  });
 });
 
 // Error handler - moved to end after all routes
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  req.flash('error', 'Internal Server Error');
-  res.redirect('back');
+  
+  // Don't redirect on AJAX requests
+  if (req.xhr) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+  
+  // For regular requests, render error page instead of redirecting
+  res.status(500).render('error', { 
+    title: 'Server Error',
+    message: 'Something went wrong',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 export default app;
