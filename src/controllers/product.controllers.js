@@ -63,15 +63,21 @@ async function deleteImageFile(filename) {
 ================================ */
 export async function listProducts(req, res) {
   try {
-    const { category, sort } = req.query;
+    const { category, sort, page = 1 } = req.query;
+    const limit = 20;
+    const offset = (page - 1) * limit;
 
+    let countQuery = 'SELECT COUNT(*) as total FROM products';
     let query = 'SELECT * FROM products';
     const params = [];
+    const countParams = [];
 
     // FILTER: Category
     if (category) {
       query += ' WHERE category = ?';
+      countQuery += ' WHERE category = ?';
       params.push(category);
+      countParams.push(category);
     }
 
     // SORTING
@@ -84,7 +90,15 @@ export async function listProducts(req, res) {
       query += ' ORDER BY id DESC';
     }
 
+    // PAGINATION
+    query += ' LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+
+    const [totalResult] = await pool.query(countQuery, countParams);
     const [products] = await pool.query(query, params);
+    
+    const total = totalResult[0].total;
+    const totalPages = Math.ceil(total / limit);
 
     products.forEach((product) => {
       product.badgeClass =
@@ -94,14 +108,23 @@ export async function listProducts(req, res) {
     });
 
     const structuredData = generateProductSchema(products);
+    const shouldAnimate = products.length < 50;
 
     res.render('product', {
       title: 'All Products – morishCart',
       products,
       structuredData,
+      shouldAnimate,
       badgeClasses,
       admin: req.session.admin || null,
       filters: { category, sort },
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      },
       success: req.flash('success'),
       error: req.flash('error'),
     });
