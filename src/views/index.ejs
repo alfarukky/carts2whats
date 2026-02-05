@@ -2,10 +2,8 @@
 <html lang="en">
   <%- include("partials/head") %>
   <body>
-    <%- include("partials/errorMsg") %>
-
     <!-- Top Banner -->
-    <div class="bg-light py-1 border-bottom shadow-sm" data-aos="fade-down">
+    <!-- <div class="bg-light py-1 border-bottom shadow-sm" data-aos="fade-down">
       <div class="container d-flex justify-content-between align-items-center">
         <div class="overflow-hidden flex-grow-1 me-3">
           <span class="deal-marquee">
@@ -16,9 +14,10 @@
           Quick Actions
         </button>
       </div>
-    </div>
+    </div> -->
     <!-- Main Navbar -->
     <%- include('partials/navbar') %>
+    <%- include("partials/errorMsg") %>
     <header>
       <!-- Hero Slider -->
       <div class="hero hero--static py-6">
@@ -655,11 +654,9 @@
                   >Edit</a
                 >
 
-                <a
-                  href="/api/products/<%= product.id %>/toggle-popular"
-                  class="btn btn-danger btn-sm w-50 ms-1"
-                  >Remove
-                </a>
+                <form action="/api/products/<%= product.id %>/toggle-popular" method="POST" class="w-50 ms-1">
+                  <button type="submit" class="btn btn-danger btn-sm w-100">Remove</button>
+                </form>
               </div>
               <% } %>
             </div>
