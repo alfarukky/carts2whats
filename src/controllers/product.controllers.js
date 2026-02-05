@@ -125,8 +125,6 @@ export async function listProducts(req, res) {
         hasNext: page < totalPages,
         hasPrev: page > 1
       },
-      success: req.flash('success'),
-      error: req.flash('error'),
     });
   } catch (err) {
     console.error('LIST PRODUCTS ERROR:', err);
