@@ -85,11 +85,7 @@
           <label class="form-label">Rating (1–5)</label>
           <select name="rating" class="form-select" required>
             <% 
-              function safeRating(rating) {
-                const r = parseFloat(rating);
-                return (r >= 1 && r <= 5) ? r : 0;
-              }
-              const validRating = safeRating(product.rating);
+              const validRating = Math.max(0, Math.min(5, parseFloat(product.rating) || 0));
             %>
             <% for (let r = 1; r <= 5; r++) { %>
               <option value="<%= r %>" <%= r == validRating ? "selected" : "" %>><%= r %> Star</option>

@@ -117,11 +117,7 @@
             <!-- Rating -->
             <div class="rating text-warning mb-1">
               <% 
-                function safeRating(rating) {
-                  const r = parseFloat(rating);
-                  return (r >= 1 && r <= 5) ? r : 0;
-                }
-                const validRating = safeRating(product.rating);
+                const validRating = Math.max(0, Math.min(5, parseFloat(product.rating) || 0));
               %>
               <% for (let s = 1; s <= 5; s++) { %> <% if (s <= validRating) {
               %>
@@ -130,7 +126,7 @@
               <i class="fa fa-star-o"></i>
               <% } %>
               <% } %>
-              <span class="text-muted small">(<%= product.reviews %>)</span>
+              <span class="text-muted small">(<%= Math.max(0, Math.min(10000, parseInt(product.reviews) || 0)) %>)</span>
             </div>
 
             <!-- Prices -->
