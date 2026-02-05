@@ -292,26 +292,7 @@
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "ItemList",
-      "itemListElement": [
-        <% products.forEach((product, index) => { %>
-        {
-          "@type": "Product",
-          "position": <%= index + 1 %>,
-          "name": "<%= product.name %>",
-          "image": "/uploads/<%= product.image %>",
-          "offers": {
-            "@type": "Offer",
-            "price": "<%= product.price %>",
-            "priceCurrency": "NGN",
-            "availability": "<%= product.is_out_of_stock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock' %>"
-          }
-        }<%= index < products.length - 1 ? ',' : '' %>
-        <% }) %>
-      ]
-    }
+    <%- structuredData %>
     </script>
     
     <script src="/js/bootstrap.bundle.min.js"></script>

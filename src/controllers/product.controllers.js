@@ -13,6 +13,28 @@ import fs from 'fs/promises';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Generate structured data for SEO
+function generateProductSchema(products) {
+  return JSON.stringify({
+    "@context": "https://schema.org/",
+    "@type": "ItemList",
+    "itemListElement": products.map((product, index) => ({
+      "@type": "Product",
+      "position": index + 1,
+      "name": product.name,
+      "image": `/uploads/${product.image}`,
+      "offers": {
+        "@type": "Offer",
+        "price": product.price.toString(),
+        "priceCurrency": "NGN",
+        "availability": product.is_out_of_stock 
+          ? "https://schema.org/OutOfStock" 
+          : "https://schema.org/InStock"
+      }
+    }))
+  });
+}
+
 // Helper function to delete image files
 async function deleteImageFile(filename) {
   if (!filename) return;
@@ -71,9 +93,12 @@ export async function listProducts(req, res) {
           : '';
     });
 
+    const structuredData = generateProductSchema(products);
+
     res.render('product', {
       title: 'All Products – morishCart',
       products,
+      structuredData,
       badgeClasses,
       admin: req.session.admin || null,
       filters: { category, sort },
