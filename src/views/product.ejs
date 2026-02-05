@@ -17,23 +17,12 @@
             onchange="this.form.submit()"
           >
             <option value="">All Categories</option>
-
-            <% const categories = [
-              "Groceries",
-              "Personal Care",
-              "Snacks",
-              "Household",
-              "Drinks",
-              "Baby Care",
-              "Others"
-            ]; %>
-
             <% categories.forEach(cat => { %>
               <option
-                value="<%= cat %>"
-                <%= filters?.category === cat ? "selected" : "" %>
+                value="<%= cat.name %>"
+                <%= filters?.category === cat.name ? "selected" : "" %>
               >
-                <%= cat %>
+                <%= cat.name %>
               </option>
             <% }) %>
           </select>
@@ -69,11 +58,16 @@
       </div>
 
       <% if (admin) { %>
-      <a href="/api/products/add" class="btn btn-success mb-3 btn-animate-1">
-        <i class="fa fa-plus"></i>
-        Add New Product
-      </a>
-
+      <div class="d-flex gap-2 mb-3">
+        <a href="/api/products/add" class="btn btn-success btn-animate-1">
+          <i class="fa fa-plus"></i>
+          Add New Product
+        </a>
+        <a href="/api/categories" class="btn btn-outline-primary">
+          <i class="fa fa-tags"></i>
+          Manage Categories
+        </a>
+      </div>
       <% } %>
 
       <div class="row g-4">

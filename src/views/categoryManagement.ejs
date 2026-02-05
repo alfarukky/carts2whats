@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head") %>
+  <body>
+    <%- include("partials/errorMsg") %>
+    <%- include('partials/navbar') %>
+    
+    <div class="container py-4 form-product">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Manage Categories</h2>
+            <a href="/api/products" class="btn btn-secondary btn-animate-1">← Back to Products</a>
+          </div>
+
+          <!-- Add New Category -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Add New Category</h5>
+            </div>
+            <div class="card-body">
+              <form method="POST" action="/api/categories">
+                <div class="row">
+                  <div class="col-md-8">
+                    <input
+                      type="text"
+                      name="name"
+                      class="form-control"
+                      placeholder="Category name"
+                      required
+                      maxlength="100"
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-success w-100 btn-animate-1">
+                      <i class="fa fa-plus"></i> Add Category
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Categories List -->
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Existing Categories</h5>
+            </div>
+            <div class="card-body">
+              <% if (categories.length === 0) { %>
+                <p class="text-muted">No categories found.</p>
+              <% } else { %>
+                <div class="list-group">
+                  <% categories.forEach(category => { %>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <span><%= category.name %></span>
+                      <div>
+                        <% if (category.name !== 'Others') { %>
+                          <form method="POST" action="/api/categories/<%= category.id %>/delete" class="d-inline">
+                            <button 
+                              type="submit" 
+                              class="btn btn-danger btn-sm btn btn-animate-1"
+                              onclick="return confirm('Delete <%= category.name %>? Products will be moved to Others category.')"
+                            >
+                              <i class="fa fa-trash"></i> Delete
+                            </button>
+                          </form>
+                        <% } else { %>
+                          <span class="badge bg-secondary">Protected</span>
+                        <% } %>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

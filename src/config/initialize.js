@@ -8,6 +8,7 @@ export async function initializeDatabase() {
     await createAllTables();
     await createSuperAdmin();
     await seedPromoCards();
+    await seedCategories();
     console.log('✅ Database initialization completed!');
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
@@ -126,6 +127,15 @@ async function createAllTables() {
     )
   `);
 
+  // Categories table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL UNIQUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   console.log('✅ All tables created/verified');
 }
 
@@ -168,5 +178,25 @@ async function seedPromoCards() {
         (3, 'Great Savings', 'Everyday Low Prices', 'Shop Now', 'product3.jpg', '/api/products')
     `);
     console.log("✓ Default promo cards created");
+  }
+}
+
+async function seedCategories() {
+  const [rows] = await pool.execute("SELECT COUNT(*) as count FROM categories");
+  
+  if (rows[0].count === 0) {
+    await pool.execute(`
+      INSERT INTO categories (name) VALUES 
+        ('Groceries'),
+        ('Personal Care'), 
+        ('Snacks'),
+        ('Household'),
+        ('Drinks'),
+        ('Baby Care'),
+        ('Others')
+    `);
+    console.log("✓ Default categories created");
+  } else {
+    console.log("✓ Categories already exist");
   }
 }
