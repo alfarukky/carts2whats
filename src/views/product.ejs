@@ -78,7 +78,7 @@
 
       <div class="row g-4">
         <% products.forEach(product => { %>
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2" data-aos="zoom-in">
+        <div class="col-6 col-md-4 col-lg-3 col-xl-2"<%= shouldAnimate ? ' data-aos="zoom-in"' : '' %>>
           <div class="product-card p-3 border rounded-3 position-relative">
             <!-- Badge -->
             <span
@@ -226,6 +226,31 @@
         </div>
         <% }) %>
       </div>
+
+      <!-- Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          <% if (pagination.hasPrev) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= pagination.currentPage - 1 %><%= filters.category ? '&category=' + filters.category : '' %><%= filters.sort ? '&sort=' + filters.sort : '' %>">Previous</a>
+          </li>
+          <% } %>
+          
+          <% for (let i = Math.max(1, pagination.currentPage - 2); i <= Math.min(pagination.totalPages, pagination.currentPage + 2); i++) { %>
+          <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %><%= filters.category ? '&category=' + filters.category : '' %><%= filters.sort ? '&sort=' + filters.sort : '' %>"><%= i %></a>
+          </li>
+          <% } %>
+          
+          <% if (pagination.hasNext) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= pagination.currentPage + 1 %><%= filters.category ? '&category=' + filters.category : '' %><%= filters.sort ? '&sort=' + filters.sort : '' %>">Next</a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+      <% } %>
     </div>
     <!-- Product Details Modal -->
     <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
@@ -287,39 +312,22 @@
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "ItemList",
-      "itemListElement": [
-        <% products.forEach((product, index) => { %>
-        {
-          "@type": "Product",
-          "position": <%= index + 1 %>,
-          "name": "<%= product.name %>",
-          "image": "/uploads/<%= product.image %>",
-          "offers": {
-            "@type": "Offer",
-            "price": "<%= product.price %>",
-            "priceCurrency": "NGN",
-            "availability": "<%= product.is_out_of_stock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock' %>"
-          }
-        }<%= index < products.length - 1 ? ',' : '' %>
-        <% }) %>
-      ]
-    }
+    <%- structuredData %>
     </script>
     
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/carts.js"></script>
     <script src="/js/script.js"></script>
+    <% if (shouldAnimate) { %>
     <script src="/js/aos.js"></script>
     <script>
       AOS.init({
         duration: 800,
         easing: "ease-out-quart",
-        once: true, // animation happens once
+        once: true,
         offset: 120,
       });
     </script>
+    <% } %>
   </body>
 </html>
