@@ -126,244 +126,29 @@
 
         <!-- Category Grid -->
         <div class="row g-4 text-center">
-          <!-- Category Item -->
+          <% popularCategories.forEach((category, index) => { %>
           <div
             class="col-6 col-md-4 col-lg-2"
             data-aos="fade-up"
-            data-aos-delay="100"
+            data-aos-delay="<%= (index % 6) * 100 + 100 %>"
           >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/cleaning-products.png"
-                  alt="Cleaning Essentials"
-                  class="category__img img-fluid"
-                />
+            <a href="/api/products?category=<%= encodeURIComponent(category.name) %>" class="text-decoration-none text-dark">
+              <div class="p-3">
+                <div
+                  class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                >
+                  <img
+                    src="<%= category.image ? '/uploads/' + category.image : '/images/placeholder-category.svg' %>"
+                    alt="<%= category.name %>"
+                    class="category__img img-fluid"
+                    onerror="this.src='/images/placeholder-category.svg'; this.onerror=null;"
+                  />
+                </div>
+                <p class="fw-semibold mt-3"><%= category.name %></p>
               </div>
-              <p class="fw-semibold mt-3">Cleaning Essentials</p>
-            </div>
+            </a>
           </div>
-
-          <!-- Category Item -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/vegetable.png"
-                  alt="Fruits & Vegetables"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Fruits & Vegetables</p>
-            </div>
-          </div>
-
-          <!-- Category Item -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/snacks.png"
-                  alt="Snacks & Munchies"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Snack & Munchies</p>
-            </div>
-          </div>
-
-          <!-- Category Item -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-                style="width: 120px; height: 120px"
-              >
-                <img
-                  src="/images/laundry-detergent.png"
-                  alt="Laundry Essentials"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Laundry Essentials</p>
-            </div>
-          </div>
-
-          <!-- Category Item -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/kitchen.png"
-                  alt="Kitchen Essentials"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Kitchen Essentials</p>
-            </div>
-          </div>
-
-          <!-- Category Item -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/tea-bag.png"
-                  alt="Tea, Coffee & Drinks"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Tea, Coffee & Drinks</p>
-            </div>
-          </div>
-
-          <!-- Row 2 -->
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-                style="width: 120px; height: 120px"
-              >
-                <img
-                  src="/images/soft-drink.png"
-                  alt="Cold Drinks & Juices"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Cold Drinks & Juices</p>
-            </div>
-          </div>
-
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/personal-care.png"
-                  alt="Personal Care"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Personal Care</p>
-            </div>
-          </div>
-
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-                style="width: 120px; height: 120px"
-              >
-                <img
-                  src="/images/baby-care.png"
-                  alt="Baby Care"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Baby Care</p>
-            </div>
-          </div>
-
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/tools.png"
-                  alt="Household Tools"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Household Tools</p>
-            </div>
-          </div>
-
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-                style="width: 120px; height: 120px"
-              >
-                <img
-                  src="/images/pet-shampoo.png"
-                  alt="Pet Care"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Pet Care</p>
-            </div>
-          </div>
-
-          <div
-            class="col-6 col-md-4 col-lg-2"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div class="p-3">
-              <div
-                class="category__item bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="/images/containers.png"
-                  alt="Storage & Containers"
-                  class="category__img img-fluid"
-                />
-              </div>
-              <p class="fw-semibold mt-3">Storage & Containers</p>
-            </div>
-          </div>
+          <% }) %>
         </div>
       </section>
       <!-- household Collections  -->

@@ -96,6 +96,7 @@ export async function listProducts(req, res) {
 
     const [totalResult] = await pool.query(countQuery, countParams);
     const [products] = await pool.query(query, params);
+    const [categories] = await pool.query('SELECT * FROM categories ORDER BY name');
     
     const total = totalResult[0].total;
     const totalPages = Math.ceil(total / limit);
@@ -113,6 +114,7 @@ export async function listProducts(req, res) {
     res.render('product', {
       title: 'All Products – morishCart',
       products,
+      categories,
       structuredData,
       shouldAnimate,
       badgeClasses,
@@ -137,10 +139,22 @@ export async function listProducts(req, res) {
    ADMIN: Show Add Product Form
 ================================ */
 export function showAddProductForm(req, res) {
-  res.render('addProduct', {
-    title: 'Add New Product – morishCart',
-    admin: req.session.admin,
-  });
+  pool.query('SELECT * FROM categories ORDER BY name')
+    .then(([categories]) => {
+      res.render('addProduct', {
+        title: 'Add New Product – morishCart',
+        categories,
+        admin: req.session.admin,
+      });
+    })
+    .catch(err => {
+      console.error('Categories fetch error:', err);
+      res.render('addProduct', {
+        title: 'Add New Product – morishCart',
+        categories: [],
+        admin: req.session.admin,
+      });
+    });
 }
 
 /* ===============================
@@ -263,9 +277,12 @@ export async function showEditProductForm(req, res) {
       return res.redirect('/api/products');
     }
 
+    const [categories] = await pool.query('SELECT * FROM categories ORDER BY name');
+
     res.render('editProduct', {
       title: 'Edit Product – morishCart',
       product: rows[0],
+      categories,
       admin: req.session.admin,
     });
   } catch (err) {

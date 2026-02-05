@@ -35,16 +35,11 @@
         <div class="mb-3">
           <label class="form-label">Category</label>
           <select name="category" class="form-select" required>
-            <option value="<%= product.category %>" selected>
-              <%= product.category %>
-            </option>
-            <option value="Groceries">Groceries</option>
-            <option value="Personal Care">Personal Care</option>
-            <option value="Snacks">Snacks</option>
-            <option value="Household">Household</option>
-            <option value="Drinks">Drinks</option>
-            <option value="Baby Care">Baby Care</option>
-            <option value="Others">Others</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.name %>" <%= product.category === cat.name ? "selected" : "" %>>
+                <%= cat.name %>
+              </option>
+            <% }) %>
           </select>
         </div>
 

@@ -22,6 +22,11 @@ export async function renderLanding(req, res) {
       'SELECT * FROM products WHERE is_popular = 1 ORDER BY id DESC LIMIT 12',
     );
 
+    // 4. Fetch Popular Categories for homepage
+    const [popularCategories] = await pool.query(
+      'SELECT * FROM categories WHERE is_popular = 1 ORDER BY name LIMIT 12',
+    );
+
     popularProducts.forEach((product) => {
       product.badgeClass =
         product.badge && badgeClasses[product.badge]
@@ -34,6 +39,7 @@ export async function renderLanding(req, res) {
       promoCards: sanitizedPromoCards,
       promoColors,
       popularProducts,
+      popularCategories,
       badgeClasses,
       admin: req.session.admin || null, // To show/hide admin controls
     });
@@ -54,6 +60,7 @@ export async function renderLanding(req, res) {
       promoCards: [],
       promoColors: {},
       popularProducts: [],
+      popularCategories: [],
       badgeClasses,
       admin: req.session.admin || null,
     });
