@@ -4,6 +4,9 @@ import {
   showCategoryManagement,
   createCategory,
   deleteCategory,
+  togglePopular,
+  updateCategoryImage,
+  categoryImageUpload,
 } from '../controllers/category.controllers.js';
 
 const categoryRoute = Router();
@@ -15,7 +18,13 @@ categoryRoute.use(isLoggedIn);
 categoryRoute.get('/', showCategoryManagement);
 
 // Create new category
-categoryRoute.post('/', createCategory);
+categoryRoute.post('/', categoryImageUpload.single('image'), createCategory);
+
+// Update category image only
+categoryRoute.post('/:id/update-image', categoryImageUpload.single('image'), updateCategoryImage);
+
+// Toggle popular status
+categoryRoute.post('/:id/toggle-popular', togglePopular);
 
 // Delete category
 categoryRoute.post('/:id/delete', deleteCategory);
