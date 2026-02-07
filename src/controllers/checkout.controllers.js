@@ -15,16 +15,22 @@ export const showCheckout = (req, res) => {
 };
 
 export const createOrder = async (req, res) => {
+  const connection = await pool.getConnection();
+  
   try {
     const { items, couponCode } = req.body;
 
     // Validate items
     if (!items || !Array.isArray(items) || items.length === 0) {
+      connection.release();
       return res.status(400).json({
         success: false,
         error: "Cart is empty",
       });
     }
+
+    // Begin transaction
+    await connection.beginTransaction();
 
     // Phase 1: Generate cart hash for idempotency
     const cartHash = items
@@ -33,7 +39,7 @@ export const createOrder = async (req, res) => {
       .join('|');
 
     // Phase 1: Check for duplicate order (within last 60 seconds)
-    const [existingOrders] = await pool.query(
+    const [existingOrders] = await connection.query(
       `SELECT order_id, total FROM orders 
        WHERE cart_hash = ? 
        AND created_at > DATE_SUB(NOW(), INTERVAL 60 SECOND)
@@ -42,6 +48,8 @@ export const createOrder = async (req, res) => {
     );
 
     if (existingOrders.length > 0) {
+      await connection.rollback();
+      connection.release();
       console.log('⚠️ Duplicate order prevented:', cartHash);
       return res.json({
         success: true,
@@ -62,6 +70,8 @@ export const createOrder = async (req, res) => {
 
       // Phase 2: Quantity validation (MAX_QUANTITY guardrail)
       if (quantity <= 0 || quantity > MAX_QUANTITY) {
+        await connection.rollback();
+        connection.release();
         return res.status(400).json({
           success: false,
           error: `Invalid quantity for product ${productId}. Max ${MAX_QUANTITY} per item.`,
@@ -69,12 +79,14 @@ export const createOrder = async (req, res) => {
       }
 
       // Fetch product from database (source of truth)
-      const [products] = await pool.query(
+      const [products] = await connection.query(
         'SELECT id, name, category, price FROM products WHERE id = ?',
         [productId]
       );
 
       if (products.length === 0) {
+        await connection.rollback();
+        connection.release();
         return res.status(400).json({
           success: false,
           error: `Product ${productId} not found`,
@@ -100,9 +112,9 @@ export const createOrder = async (req, res) => {
 
     // Calculate discount (if coupon provided)
     let discount = 0;
-    if (couponCode && discountAmount) {
+    if (couponCode) {
       // Re-validate coupon server-side
-      const [coupons] = await pool.query(
+      const [coupons] = await connection.query(
         `SELECT * FROM coupons 
          WHERE code = ? 
          AND is_active = 1 
@@ -129,7 +141,7 @@ export const createOrder = async (req, res) => {
     const orderId = generateOrderId();
 
     // Phase 1: Insert into orders table (analytics base)
-    await pool.query(
+    await connection.query(
       `INSERT INTO orders (order_id, cart_hash, subtotal, discount, total, coupon_code, status)
        VALUES (?, ?, ?, ?, ?, ?, 'initiated')`,
       [orderId, cartHash, subtotal, discount, total, couponCode || null]
@@ -137,7 +149,7 @@ export const createOrder = async (req, res) => {
 
     // Phase 1: Insert order items (analytics ready)
     for (const item of validatedItems) {
-      await pool.query(
+      await connection.query(
         `INSERT INTO order_items 
          (order_id, product_id, variant_id, product_name_snapshot, 
           product_category_snapshot, variant_name_snapshot, quantity, 
@@ -158,11 +170,21 @@ export const createOrder = async (req, res) => {
     }
 
     // Backward compatibility: Create legacy order_verification
-    await createOrderVerification(
-      orderId,
-      total,
-      couponCode ? { code: couponCode, discount } : null
+    await connection.query(
+      `INSERT INTO order_verifications 
+       (order_id, total_amount, signature, coupon_code, discount_amount)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        orderId,
+        total,
+        orderId.substring(0, 4).toUpperCase(),
+        couponCode || null,
+        discount
+      ]
     );
+
+    // Commit transaction - all or nothing
+    await connection.commit();
 
     console.log('✓ Order created:', orderId, 'Total:', total);
 
@@ -186,6 +208,9 @@ export const createOrder = async (req, res) => {
     });
 
   } catch (error) {
+    // Rollback transaction on any error
+    await connection.rollback();
+    
     // Phase 1: Structured error logging
     console.error("❌ Order creation failed:", {
       error: error.message,
@@ -197,6 +222,9 @@ export const createOrder = async (req, res) => {
       success: false,
       error: "Failed to create order. Please try again.",
     });
+  } finally {
+    // Always release connection back to pool
+    connection.release();
   }
 };
 
