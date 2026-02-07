@@ -277,10 +277,9 @@ async function buildWhatsAppMessage(openDirectly = false) {
     // Create order with server-side calculation
     const orderPayload = { items };
 
-    // Add coupon data if applied
+    // Add coupon code if applied
     if (appliedCoupon) {
       orderPayload.couponCode = appliedCoupon.code;
-      orderPayload.discountAmount = appliedCoupon.discount;
     }
 
     const response = await fetch("/api/checkout/create", {
@@ -298,36 +297,8 @@ async function buildWhatsAppMessage(openDirectly = false) {
       throw new Error(orderData.error || "Failed to create order");
     }
 
-    // Build WhatsApp message from cart (display only)
-    const date = new Date().toLocaleDateString();
-    const total = getCartTotal();
-    const finalTotal = appliedCoupon ? total - appliedCoupon.discount : total;
-
-    let message = `🛒 MorishCart Order\n`;
-    message += `Order ID: ${orderData.orderId}\n`;
-    message += `Date: ${date}\n\n`;
-    message += `*ITEMS:*\n`;
-
-    cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      const safeName = item.name.replace(/[<>&"']/g, '');
-      message += `${index + 1}. ${safeName} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
-    });
-
-    message += `\n----------------------\n`;
-    message += `Subtotal: ₦${total.toFixed(2)}\n`;
-
-    if (appliedCoupon) {
-      message += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
-      message += `*TOTAL: ₦${finalTotal.toFixed(2)}*\n`;
-    } else {
-      message += `*TOTAL: ₦${total.toFixed(2)}*\n`;
-    }
-    message += `📋 Ref: ${orderData.verificationCode}\n`;
-    message += `----------------------\n\n`;
-    message += `Delivery Required: Yes / No\n`;
-    message += `Payment Method: Cash / Transfer\n\n`;
-    message += `Please confirm availability.`;
+    // Use server-generated WhatsApp message
+    const message = orderData.whatsappMessage;
 
     if (openDirectly) {
       window.open(
@@ -335,7 +306,7 @@ async function buildWhatsAppMessage(openDirectly = false) {
         "_blank",
       );
       
-      // Phase 1: Clear cart ONLY after successful order creation
+      // Clear cart after successful order
       localStorage.removeItem(CART_KEY);
       appliedCoupon = null;
       updateCartBadge();

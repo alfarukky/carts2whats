@@ -16,7 +16,7 @@ export const showCheckout = (req, res) => {
 
 export const createOrder = async (req, res) => {
   try {
-    const { items, couponCode, discountAmount } = req.body;
+    const { items, couponCode } = req.body;
 
     // Validate items
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -166,12 +166,23 @@ export const createOrder = async (req, res) => {
 
     console.log('✓ Order created:', orderId, 'Total:', total);
 
+    // Build WhatsApp message server-side
+    const whatsappMessage = buildWhatsAppMessage(
+      orderId,
+      validatedItems,
+      subtotal,
+      discount,
+      total,
+      couponCode
+    );
+
     // Return order details
     res.json({
       success: true,
       orderId,
       verificationCode: orderId.substring(0, 4).toUpperCase(),
       totalAmount: parseFloat(total),
+      whatsappMessage,
     });
 
   } catch (error) {
@@ -188,3 +199,33 @@ export const createOrder = async (req, res) => {
     });
   }
 };
+
+// Helper: Build WhatsApp message server-side
+function buildWhatsAppMessage(orderId, items, subtotal, discount, total, couponCode) {
+  const date = new Date().toLocaleDateString();
+  
+  let msg = `🛒 MorishCart Order\n`;
+  msg += `Order ID: ${orderId}\n`;
+  msg += `Date: ${date}\n\n`;
+  msg += `*ITEMS:*\n`;
+  
+  items.forEach((item, i) => {
+    msg += `${i + 1}. ${item.productName} × ${item.quantity} — ₦${item.lineTotal.toFixed(2)}\n`;
+  });
+  
+  msg += `\n----------------------\n`;
+  msg += `Subtotal: ₦${subtotal.toFixed(2)}\n`;
+  
+  if (discount > 0) {
+    msg += `Coupon: ${couponCode} (-₦${discount.toFixed(2)})\n`;
+  }
+  
+  msg += `*TOTAL: ₦${total.toFixed(2)}*\n`;
+  msg += `📋 Ref: ${orderId.substring(0, 4).toUpperCase()}\n`;
+  msg += `----------------------\n\n`;
+  msg += `Delivery Required: Yes / No\n`;
+  msg += `Payment Method: Cash / Transfer\n\n`;
+  msg += `Please confirm availability.`;
+  
+  return msg;
+}
