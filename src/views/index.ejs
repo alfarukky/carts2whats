@@ -27,17 +27,16 @@
               <span
                 class="badge bg-success-subtle text-success fw-semibold mb-3"
               >
-                Fresh deals daily
+                <%= content.hero.badge %>
               </span>
 
               <h1 class="display-4 fw-extrabold lh-tight mb-3">
-                Welcome to
-                <span class="text-success text-heading">MorishCart</span>
+                <%= content.hero.title %>
+                <span class="text-success text-heading"><%= content.branding.siteName %></span>
               </h1>
 
               <p class="lead text-muted mb-4">
-                Premium-quality groceries and home essentials delivered fast.
-                Fresh arrivals every day at unbeatable prices.
+                <%= content.hero.description %>
               </p>
 
               <!-- CTA buttons -->
@@ -46,10 +45,10 @@
                   href="#popular-products"
                   class="btn btn-success btn-lg btn-animate-1"
                 >
-                  Shop Now
+                  <%= content.hero.ctaPrimary %>
                 </a>
                 <a href="/api/products" class="btn btn-outline-success btn-lg">
-                  Browse Categories
+                  <%= content.hero.ctaSecondary %>
                 </a>
               </div>
             </div>
@@ -119,7 +118,7 @@
       <section class="container py-5">
         <!-- Section Title -->
         <div class="text-center mb-5">
-          <h2 class="fw-bold text-heading">Shop Popular Categories</h2>
+          <h2 class="fw-bold text-heading"><%= content.sections.categories.title %></h2>
           <div class="mx-auto line__small line--orange"></div>
           <div class="mx-auto line line--orange"></div>
         </div>
@@ -156,156 +155,50 @@
         <div class="container">
           <!-- Header -->
           <div class="text-center mb-5">
-            <h2 class="fw-bold text-heading">HOUSEHOLD COLLECTIONS</h2>
+            <h2 class="fw-bold text-heading"><%= content.sections.household.title %></h2>
             <div class="mx-auto line line--blue"></div>
             <div class="mx-auto line__small line--blue"></div>
 
             <p class="lead mt-3 text-muted w-75 mx-auto">
-              Discover quality household essentials — from cleaning and laundry
-              supplies to kitchenware and appliance care, all in one convenient
-              store.
+              <%= content.sections.household.subtitle %>
             </p>
           </div>
 
           <!-- Product Collection Row -->
           <div class="row mt-3">
-            <!-- Cleaning Essentials -->
+            <% content.sections.household.collections.forEach((collection, index) => { %>
             <div class="col-lg-4 mb-3" data-aos="fade-up">
               <div class="service_card">
                 <div class="service_card__side service_card__side--front">
-                  <div
-                    class="service_card__picture service_card__picture--4"
-                  ></div>
+                  <div class="service_card__picture service_card__picture--<%= index + 4 %>"></div>
                   <h4 class="service_card__heading">
-                    <span
-                      class="service_card__heading-span service_card__heading-span--4"
-                      >Cleaning Essentials</span
-                    >
+                    <span class="service_card__heading-span service_card__heading-span--<%= index + 4 %>">
+                      <%= collection.name %>
+                    </span>
                   </h4>
                   <div class="service_card__details">
                     <ul class="service_card__details__list">
+                      <% collection.features.forEach(feature => { %>
                       <li>
-                        <i class="icon-color--1 fas fa-check-circle"></i>
-                        Surface & Floor Cleaners
+                        <i class="icon-color--<%= index + 1 %> fas fa-check-circle"></i>
+                        <%= feature %>
                       </li>
-                      <li>
-                        <i class="icon-color--1 fas fa-check-circle"></i>
-                        Bathroom & Kitchen Supplies
-                      </li>
-                      <li>
-                        <i class="icon-color--1 fas fa-check-circle"></i>
-                        Eco-Friendly Cleaning Tools
-                      </li>
+                      <% }) %>
                     </ul>
                   </div>
                 </div>
-                <div
-                  class="service_card__side service_card__side--back service_card__side--back-4"
-                >
-                  <h3>Cleaning Essentials</h3>
+                <div class="service_card__side service_card__side--back service_card__side--back-<%= index + 4 %>">
+                  <h3><%= collection.name %></h3>
                   <p class="lead">
-                    Keep your home spotless with premium-quality cleaning and
-                    disinfectant products from trusted brands.
+                    <%= collection.description %>
                   </p>
-                  <a href="/api/products?category=Groceries" class="card_btn"
-                    >Shop Now</a
-                  >
+                  <a href="<%= collection.link %>" class="card_btn">
+                    <%= collection.buttonText %>
+                  </a>
                 </div>
               </div>
             </div>
-
-            <!-- Laundry Essentials -->
-            <div class="col-lg-4 mb-3" data-aos="fade-up">
-              <div class="service_card">
-                <div class="service_card__side service_card__side--front">
-                  <div
-                    class="service_card__picture service_card__picture--5"
-                  ></div>
-                  <h4 class="service_card__heading">
-                    <span
-                      class="service_card__heading-span service_card__heading-span--5"
-                      >Laundry Essentials</span
-                    >
-                  </h4>
-                  <div class="service_card__details">
-                    <ul class="service_card__details__list">
-                      <li>
-                        <i class="icon-color--2 fas fa-check-circle"></i>
-                        Detergents & Softeners
-                      </li>
-                      <li>
-                        <i class="icon-color--2 fas fa-check-circle"></i> Stain
-                        Removers & Fresheners
-                      </li>
-                      <li>
-                        <i class="icon-color--2 fas fa-check-circle"></i>
-                        Laundry Bags & Organizers
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div
-                  class="service_card__side service_card__side--back service_card__side--back-5"
-                >
-                  <h3>Laundry Essentials</h3>
-                  <p class="lead">
-                    Enjoy cleaner, fresher clothes with laundry care items that
-                    make washing effortless and effective.
-                  </p>
-                  <a href="/api/products?category=fresh" class="card_btn"
-                    >Explore Products</a
-                  >
-                </div>
-              </div>
-            </div>
-
-            <!-- Kitchen & Appliance Care -->
-            <div class="col-lg-4 mb-3" data-aos="fade-up">
-              <div class="service_card">
-                <div class="service_card__side service_card__side--front">
-                  <div
-                    class="service_card__picture service_card__picture--6"
-                  ></div>
-                  <h4 class="service_card__heading">
-                    <span
-                      class="service_card__heading-span service_card__heading-span--6"
-                      >Kitchen & Appliance Care</span
-                    >
-                  </h4>
-                  <div class="service_card__details">
-                    <ul class="service_card__details__list">
-                      <li>
-                        <i class="icon-color--3 fas fa-check-circle"></i>
-                        Kitchen Cleaners & Degreasers
-                      </li>
-                      <li>
-                        <i class="icon-color--3 fas fa-check-circle"></i>
-                        Dishwashing Liquids & Sponges
-                      </li>
-                      <li>
-                        <i class="icon-color--3 fas fa-check-circle"></i>
-                        Appliance Maintenance Kits
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div
-                  class="service_card__side service_card__side--back service_card__side--back-6"
-                >
-                  <h3>Kitchen & Appliance Care</h3>
-                  <p>
-                    Keep your kitchen and appliances spotless with our durable,
-                    effective, and affordable cleaning solutions.
-                  </p>
-                  <a
-                    href="/api/products?category=Personal Care"
-                    class="card_btn"
-                    >View Collection</a
-                  >
-                </div>
-              </div>
-            </div>
+            <% }) %>
           </div>
         </div>
       </section>
@@ -313,7 +206,7 @@
         <div class="container">
           <!-- Section Header -->
           <div class="text-center mb-3">
-            <h2 class="fw-bold text-heading display-6">Popular Products</h2>
+            <h2 class="fw-bold text-heading display-6"><%= content.sections.products.title %></h2>
             <div class="mx-auto line__small line--green"></div>
             <div class="mx-auto line line--green"></div>
           </div>
@@ -321,12 +214,12 @@
           <!-- If no popular products -->
           <% if (popularProducts.length === 0) { %>
           <p class="text-center text-muted fs-5">
-            No popular products selected yet.
+            <%= content.sections.products.emptyMessage %>
           </p>
           <% if (admin) { %>
           <div class="text-center mb-3">
             <a href="/api/products" class="btn btn-success btn-animate-1">
-              Add Products
+              <%= content.sections.products.addButton %>
             </a>
           </div>
           <% } %>
@@ -334,7 +227,7 @@
           <% if (admin) { %>
           <div class="text-center mb-3">
             <a href="/api/products" class="btn btn-success btn-animate-1">
-              Add Products
+              <%= content.sections.products.addButton %>
             </a>
           </div>
           <% } %>
@@ -457,10 +350,9 @@
                 <div class="icon mb-3 text-primary fs-1">
                   <i class="fa-solid fa-truck-fast"></i>
                 </div>
-                <h5 class="fw-bold">Fast & Reliable Delivery</h5>
+                <h5 class="fw-bold"><%= content.sections.services.delivery.title %></h5>
                 <p class="text-muted mb-0">
-                  Get your items delivered quickly with Amazon's trusted
-                  logistics network across the country.
+                  <%= content.sections.services.delivery.description %>
                 </p>
               </div>
             </div>
@@ -471,10 +363,9 @@
                 <div class="icon mb-3 text-success fs-1">
                   <i class="fa-solid fa-lock"></i>
                 </div>
-                <h5 class="fw-bold">Secure Payments</h5>
+                <h5 class="fw-bold"><%= content.sections.services.payments.title %></h5>
                 <p class="text-muted mb-0">
-                  Pay safely with multiple options — credit card, UPI, Amazon
-                  Pay, and cash on delivery.
+                  <%= content.sections.services.payments.description %>
                 </p>
               </div>
             </div>
@@ -485,10 +376,9 @@
                 <div class="icon mb-3 text-warning fs-1">
                   <i class="fa-solid fa-rotate-left"></i>
                 </div>
-                <h5 class="fw-bold">Easy Returns</h5>
+                <h5 class="fw-bold"><%= content.sections.services.returns.title %></h5>
                 <p class="text-muted mb-0">
-                  Changed your mind? Return eligible items quickly and get your
-                  refund hassle-free.
+                  <%= content.sections.services.returns.description %>
                 </p>
               </div>
             </div>
@@ -499,10 +389,9 @@
                 <div class="icon mb-3 text-danger fs-1">
                   <i class="fa-solid fa-headset"></i>
                 </div>
-                <h5 class="fw-bold">24/7 Customer Support</h5>
+                <h5 class="fw-bold"><%= content.sections.services.support.title %></h5>
                 <p class="text-muted mb-0">
-                  Get instant help anytime through chat, phone, or email from
-                  our dedicated support team.
+                  <%= content.sections.services.support.description %>
                 </p>
               </div>
             </div>
