@@ -13,8 +13,7 @@
 *.bak
 *.swp 
 .prettierrc
-commit.md
-find.md
+*.md
 src/config/script.js
 
 # Ignore uploaded images
