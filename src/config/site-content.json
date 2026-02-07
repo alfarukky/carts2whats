@@ -25,6 +25,45 @@
       "emptyMessage": "No popular products selected yet.",
       "addButton": "Add Products"
     },
+    "household": {
+      "title": "HOUSEHOLD COLLECTIONS",
+      "subtitle": "Discover quality household essentials — from cleaning and laundry supplies to kitchenware and appliance care, all in one convenient store.",
+      "collections": [
+        {
+          "name": "Cleaning Essentials",
+          "description": "Keep your home spotless with premium-quality cleaning and disinfectant products from trusted brands.",
+          "features": [
+            "Surface & Floor Cleaners",
+            "Bathroom & Kitchen Supplies",
+            "Eco-Friendly Cleaning Tools"
+          ],
+          "buttonText": "Shop Now",
+          "link": "/api/products?category=Groceries"
+        },
+        {
+          "name": "Laundry Essentials",
+          "description": "Enjoy cleaner, fresher clothes with laundry care items that make washing effortless and effective.",
+          "features": [
+            "Detergents & Softeners",
+            "Stain Removers & Fresheners",
+            "Laundry Bags & Organizers"
+          ],
+          "buttonText": "Explore Products",
+          "link": "/api/products?category=fresh"
+        },
+        {
+          "name": "Kitchen & Appliance Care",
+          "description": "Keep your kitchen and appliances spotless with our durable, effective, and affordable cleaning solutions.",
+          "features": [
+            "Kitchen Cleaners & Degreasers",
+            "Dishwashing Liquids & Sponges",
+            "Appliance Maintenance Kits"
+          ],
+          "buttonText": "View Collection",
+          "link": "/api/products?category=Personal Care"
+        }
+      ]
+    },
     "services": {
       "delivery": {
         "title": "Fast & Reliable Delivery",
