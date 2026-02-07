@@ -32,11 +32,11 @@ export const createOrder = async (req, res) => {
     // Begin transaction
     await connection.beginTransaction();
 
-    // Phase 1: Generate cart hash for idempotency
+    // Phase 1: Generate cart hash for idempotency (includes coupon)
     const cartHash = items
       .map(i => `${i.productId || i.id}:${i.quantity}`)
       .sort()
-      .join('|');
+      .join('|') + `|coupon:${couponCode || 'none'}`;
 
     // Phase 1: Check for duplicate order (within last 60 seconds)
     const [existingOrders] = await connection.query(
