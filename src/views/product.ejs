@@ -147,7 +147,7 @@
               type="button"
               class="btn btn-outline-success btn-sm w-100 add-to-cart-btn"
               data-id="<%= product.id %>"
-              data-name="<%- JSON.stringify(product.name) %>"
+              data-name="<%= product.name %>"
               data-price="<%= product.price %>"
               data-image="/uploads/<%= product.image %>">
              <i class="fa fa-shopping-cart me-2"></i> Add to Cart
@@ -160,13 +160,13 @@
               data-bs-toggle="modal"
               data-bs-target="#productModal"
               data-id="<%= product.id %>"
-              data-name="<%- JSON.stringify(product.name) %>"
-              data-category="<%- JSON.stringify(product.category) %>"
-              data-description="<%- JSON.stringify(product.description || '') %>"
+              data-name="<%= product.name %>"
+              data-category="<%= product.category %>"
+              data-description="<%= product.description || '' %>"
               data-price="<%= product.price %>"
               data-oldprice="<%= product.old_price || '' %>"
               data-image="/uploads/<%= product.image %>"
-              data-video="<%- JSON.stringify(product.video_url || '') %>"
+              data-video="<%= product.video_url || '' %>"
             >
               View Details
             </button>
