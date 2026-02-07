@@ -268,13 +268,14 @@ async function buildWhatsAppMessage(openDirectly = false) {
   }
 
   try {
-    // Create order verification record with final total and coupon data
-    const total = getCartTotal();
-    const finalTotal = appliedCoupon ? total - appliedCoupon.discount : total;
+    // Prepare items for server validation
+    const items = cart.map(item => ({
+      productId: item.id,
+      quantity: item.quantity
+    }));
 
-    const orderPayload = {
-      totalAmount: finalTotal,
-    };
+    // Create order with server-side calculation
+    const orderPayload = { items };
 
     // Add coupon data if applied
     if (appliedCoupon) {
@@ -297,7 +298,10 @@ async function buildWhatsAppMessage(openDirectly = false) {
       throw new Error(orderData.error || "Failed to create order");
     }
 
+    // Build WhatsApp message from cart (display only)
     const date = new Date().toLocaleDateString();
+    const total = getCartTotal();
+    const finalTotal = appliedCoupon ? total - appliedCoupon.discount : total;
 
     let message = `🛒 MorishCart Order\n`;
     message += `Order ID: ${orderData.orderId}\n`;
@@ -330,13 +334,20 @@ async function buildWhatsAppMessage(openDirectly = false) {
         `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
         "_blank",
       );
+      
+      // Phase 1: Clear cart ONLY after successful order creation
+      localStorage.removeItem(CART_KEY);
+      appliedCoupon = null;
+      updateCartBadge();
+      renderCart();
+      
       return true;
     }
 
     return encodeURIComponent(message);
   } catch (error) {
     console.error("Detailed error:", error);
-    showToast("Error creating order. Please try again.");
+    showToast(error.message || "Error creating order. Please try again.");
     return null;
   }
 }
