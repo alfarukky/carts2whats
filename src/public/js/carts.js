@@ -268,18 +268,18 @@ async function buildWhatsAppMessage(openDirectly = false) {
   }
 
   try {
-    // Create order verification record with final total and coupon data
-    const total = getCartTotal();
-    const finalTotal = appliedCoupon ? total - appliedCoupon.discount : total;
+    // Prepare items for server validation
+    const items = cart.map(item => ({
+      productId: item.id,
+      quantity: item.quantity
+    }));
 
-    const orderPayload = {
-      totalAmount: finalTotal,
-    };
+    // Create order with server-side calculation
+    const orderPayload = { items };
 
-    // Add coupon data if applied
+    // Add coupon code if applied
     if (appliedCoupon) {
       orderPayload.couponCode = appliedCoupon.code;
-      orderPayload.discountAmount = appliedCoupon.discount;
     }
 
     const response = await fetch("/api/checkout/create", {
@@ -297,46 +297,28 @@ async function buildWhatsAppMessage(openDirectly = false) {
       throw new Error(orderData.error || "Failed to create order");
     }
 
-    const date = new Date().toLocaleDateString();
-
-    let message = `🛒 MorishCart Order\n`;
-    message += `Order ID: ${orderData.orderId}\n`;
-    message += `Date: ${date}\n\n`;
-    message += `*ITEMS:*\n`;
-
-    cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      const safeName = item.name.replace(/[<>&"']/g, '');
-      message += `${index + 1}. ${safeName} × ${item.quantity} — ₦${itemTotal.toFixed(2)}\n`;
-    });
-
-    message += `\n----------------------\n`;
-    message += `Subtotal: ₦${total.toFixed(2)}\n`;
-
-    if (appliedCoupon) {
-      message += `Coupon: ${appliedCoupon.code} (-₦${appliedCoupon.discount.toFixed(2)})\n`;
-      message += `*TOTAL: ₦${finalTotal.toFixed(2)}*\n`;
-    } else {
-      message += `*TOTAL: ₦${total.toFixed(2)}*\n`;
-    }
-    message += `📋 Ref: ${orderData.verificationCode}\n`;
-    message += `----------------------\n\n`;
-    message += `Delivery Required: Yes / No\n`;
-    message += `Payment Method: Cash / Transfer\n\n`;
-    message += `Please confirm availability.`;
+    // Use server-generated WhatsApp message
+    const message = orderData.whatsappMessage;
 
     if (openDirectly) {
       window.open(
         `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
         "_blank",
       );
+      
+      // Clear cart after successful order
+      localStorage.removeItem(CART_KEY);
+      appliedCoupon = null;
+      updateCartBadge();
+      renderCart();
+      
       return true;
     }
 
     return encodeURIComponent(message);
   } catch (error) {
     console.error("Detailed error:", error);
-    showToast("Error creating order. Please try again.");
+    showToast(error.message || "Error creating order. Please try again.");
     return null;
   }
 }

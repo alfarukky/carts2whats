@@ -138,6 +138,44 @@ async function createAllTables() {
     )
   `);
 
+  // Orders table (Option B - Analytics)
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_id VARCHAR(20) UNIQUE NOT NULL,
+      cart_hash VARCHAR(255) NOT NULL,
+      subtotal DECIMAL(10,2) NOT NULL,
+      discount DECIMAL(10,2) DEFAULT 0,
+      total DECIMAL(10,2) NOT NULL,
+      coupon_code VARCHAR(50) NULL,
+      status ENUM('initiated','confirmed','cancelled','expired') DEFAULT 'initiated',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX idx_cart_hash (cart_hash),
+      INDEX idx_status (status),
+      INDEX idx_created_at (created_at)
+    )
+  `);
+
+  // Order items table (Option B - Analytics)
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS order_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_id VARCHAR(20) NOT NULL,
+      product_id INT NOT NULL,
+      variant_id INT NULL,
+      product_name_snapshot VARCHAR(255) NOT NULL,
+      product_category_snapshot VARCHAR(100) NULL,
+      variant_name_snapshot VARCHAR(100) NULL,
+      quantity INT NOT NULL,
+      price_snapshot DECIMAL(10,2) NOT NULL,
+      line_total DECIMAL(10,2) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_product_id (product_id),
+      INDEX idx_order_id (order_id)
+    )
+  `);
+
   console.log('✅ All tables created/verified');
 }
 
